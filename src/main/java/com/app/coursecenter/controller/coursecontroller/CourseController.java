@@ -2,7 +2,7 @@ package com.app.coursecenter.controller.coursecontroller;
 
 
 import com.app.coursecenter.entity.Course;
-import com.app.coursecenter.Service.courseservice.CourseService;
+import com.app.coursecenter.service.courseservice.CourseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +19,7 @@ public class CourseController {
     private final CourseService courseService;
 
 
-    @GetMapping("/")
+    @GetMapping("")
     public ResponseEntity<List<Course>> getAllCourses() {
         try {
             return ResponseEntity.ok(courseService.getAllCourses());
