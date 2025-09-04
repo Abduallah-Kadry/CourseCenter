@@ -25,6 +25,3 @@ spring:
       enabled: true
     livereload:
       enabled: true
-
-server:
-  port: 8081
