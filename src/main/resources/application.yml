@@ -1,0 +1,14 @@
+server:
+    port: 8080
+spring:
+    datasource:
+        url: jdbc:mysql://localhost:3307/courseCenterDB?serverTimezoneUTC&allowPublicKeyRetrieval=true&useSSL=false
+        username: sa
+        password: ''
+    jpa:
+        hibernate:
+            ddl-auto: update
+        show-sql: true
+    jwt:
+        secret: 370fc2ad32927ff329d2807b020a92cbde3d349b44c19304d3c8e8b107365042
+        expiration: 900000
