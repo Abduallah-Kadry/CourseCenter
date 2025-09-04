@@ -1,12 +1,16 @@
+---
+Last-Modified: 2025-09-04 23:02
+---
 ## CourseCenter App
 
 - full student with the password
 - full api with api response entity for the 5 crud normal operations
-  - documented through **swagger**
+ -  documented through **swagger**
 - pagination 
 - data shared in github using the entity and the ddl creation mode = update
 - data is unique for me and you
-- 
+- out from db -> dto
+- in from controller (authenticator, jwt) -> request
 - 
 
 ---
@@ -19,3 +23,6 @@
 
 
 - i need to go to the docker to see how every thing is composed and integrated
+
+
+![[README 2025-09-04.excalidraw]]

@@ -9,10 +9,6 @@ import lombok.Data;
 
 @Entity
 @Data
-// student pw ????
-
-
-// user -> student , user -> teacher ?
 public class Student {
 
     @Id
