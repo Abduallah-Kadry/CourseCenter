@@ -24,7 +24,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
 
-
     public AuthenticationServiceImpl(StudentRepository studentRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtService jwtService) {
         this.studentRepository = studentRepository;
         this.passwordEncoder = passwordEncoder;
@@ -36,17 +35,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Transactional
     public void register(RegisterRequest input) throws Exception {
         if (isEmailTaken(input.getEmail())) {
-            throw new Exception("Email is taken");
+            throw new Exception("Email already taken");
         }
-        Student student = buildNewStudent(input);
+        Student student = buildNewUser(input);
         studentRepository.save(student);
     }
 
     @Override
     @Transactional(readOnly = true)
     public AuthenticationResponse login(AuthenticationRequest request) {
+
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+        );
 
         Student student = studentRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
@@ -60,7 +61,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return studentRepository.findByEmail(email).isPresent();
     }
 
-    private Student buildNewStudent(RegisterRequest input) {
+    private Student buildNewUser(RegisterRequest input) {
         Student student = new Student();
         student.setId(0);
         student.setFirst_name(input.getFirstName());

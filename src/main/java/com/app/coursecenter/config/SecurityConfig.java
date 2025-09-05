@@ -1,5 +1,6 @@
 package com.app.coursecenter.config;
 
+
 import com.app.coursecenter.repository.StudentRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,12 +22,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final UserDetailsService userDetailsService;
     private final StudentRepository studentRepository;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    public SecurityConfig(UserDetailsService userDetailsService, StudentRepository studentRepository) {
-        this.userDetailsService = userDetailsService;
+    public SecurityConfig(StudentRepository studentRepository, JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.studentRepository = studentRepository;
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
     @Bean
@@ -47,20 +48,20 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationEntryPoint authenticationEntryPoint() {
-        return (request, response, auth) -> {
+        return (request, response, ex) -> {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.setContentType("application/json");
             response.setHeader("WWW-Authenticate", "");
-            response.getWriter().write("{\"error\":\"Unauthorized\"}");
+            response.getWriter().write("{\"error\": \"Unauthorized access\"}");
         };
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
-        http.authorizeHttpRequests(configuer ->
-                configuer
-                        .requestMatchers("api/auth/**", "/swagger/-ui/**", "/v3/api-docs/**",
-                                "swagger-resources/**", "/webjars/**", "/docs").permitAll()
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests(configurer ->
+                configurer
+                        .requestMatchers("/api/auth/register", "/api/auth/login","/swagger-ui/**", "/v3/api-docs/**",
+                                "/swagger-resources/**", "/webjars/**", "/docs").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
         );
@@ -70,6 +71,7 @@ public class SecurityConfig {
         http.exceptionHandling(exceptionHandling ->
                 exceptionHandling
                         .authenticationEntryPoint(authenticationEntryPoint()));
+
         http.sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
@@ -77,4 +79,5 @@ public class SecurityConfig {
 
         return http.build();
     }
+
 }

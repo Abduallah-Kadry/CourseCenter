@@ -1,14 +1,23 @@
 server:
     port: 8080
+
 spring:
     datasource:
-        url: jdbc:mysql://localhost:3307/courseCenterDB?serverTimezoneUTC&allowPublicKeyRetrieval=true&useSSL=false
-        username: sa
-        password: ''
+        url: jdbc:mysql://localhost:3307/tododb?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
+        username: root
+        password: secret
+        driver-class-name: com.mysql.cj.jdbc.Driver
+
     jpa:
         hibernate:
             ddl-auto: update
         show-sql: true
-    jwt:
-        secret: 370fc2ad32927ff329d2807b020a92cbde3d349b44c19304d3c8e8b107365042
-        expiration: 900000
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.MySQLDialect
+
+
+# Custom JWT properties (not under spring:)
+jwt:
+    secret: 370fc2ad32927ff329d2807b020a92cbde3d349b44c19304d3c8e8b107365042
+    expiration: 900000
