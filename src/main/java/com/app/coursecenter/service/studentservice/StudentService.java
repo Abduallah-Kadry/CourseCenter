@@ -3,6 +3,7 @@ package com.app.coursecenter.service.studentservice;
 
 import com.app.coursecenter.entity.Student;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 public interface StudentService {
@@ -15,4 +16,7 @@ public interface StudentService {
     Student updateStudent(Long id, Student student);
 
     void deleteStudent(Long id);
+
+    Student getUser() throws AccessDeniedException;
+
 }

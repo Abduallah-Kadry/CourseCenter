@@ -1,16 +1,18 @@
 spring:
   application:
     name: CourseCenter
-
-  security:
-    user:
-      name: aks
-      password: 123
+# see if the security config that abe provided is overriding the current setting 
+#  security:
+#    user:
+#      name: aks
+#      password: 123
 
   datasource:
     url: jdbc:mysql://localhost:3306/CourseCenter
     username: root
     password: 502250
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+
 
   jpa:
     hibernate:
@@ -25,3 +27,9 @@ spring:
       enabled: true
     livereload:
       enabled: true
+
+# Custom JWT properties (not under spring:) i made it myself
+jwt:
+  secret: 370fc2ad32927ff329d2807b020a92cbde3d349b44c19304d3c8e8b107365042
+  expiration: 900000
+
