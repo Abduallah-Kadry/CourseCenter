@@ -1,6 +1,5 @@
 package com.app.coursecenter.controller.coursecontroller;
 
-
 import com.app.coursecenter.entity.Course;
 import com.app.coursecenter.service.courseservice.CourseService;
 import lombok.RequiredArgsConstructor;
@@ -14,10 +13,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/course")
 @RequiredArgsConstructor
+
 public class CourseController {
 
     private final CourseService courseService;
-
 
     @GetMapping("")
     public ResponseEntity<List<Course>> getAllCourses() {

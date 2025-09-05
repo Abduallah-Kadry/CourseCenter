@@ -1,6 +1,4 @@
 package com.app.coursecenter.dto;
-
-
 import lombok.Data;
 
 @Data
