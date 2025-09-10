@@ -13,6 +13,5 @@ public interface StudentMapper {
 
     //TODO the fokin mapper doesn't get me the first name and last name although they are typical written  in Student and StudentDto
     StudentDto map(Student student);
-
     List<StudentDto> map(List<Student> students);
 }

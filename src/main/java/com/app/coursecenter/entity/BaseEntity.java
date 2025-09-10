@@ -15,10 +15,11 @@ import java.time.LocalDateTime;
 
 @ToString
 @Data
-@MappedSuperclass
+@MappedSuperclass //
 @EntityListeners(AuditingEntityListener.class)
 public class BaseEntity {
 
+    // put these columns in any registerd table ?
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;

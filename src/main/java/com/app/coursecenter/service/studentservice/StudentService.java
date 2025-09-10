@@ -13,6 +13,7 @@ public interface StudentService {
     // get single student (search for a way to make api search by some criteria (like name, phone, etc...))
 
 
+
     StudentDto getStudentInfo() throws AccessDeniedException;
 
     void deleteStudent() throws AccessDeniedException;

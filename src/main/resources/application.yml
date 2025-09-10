@@ -31,5 +31,8 @@ spring:
 # Custom JWT properties (not under spring:) i made it myself
 jwt:
   secret: 370fc2ad32927ff329d2807b020a92cbde3d349b44c19304d3c8e8b107365042
-  expiration: 900000
+  expiration: 72000000
 
+springdoc:
+  swagger-ui:
+    path=/docs
