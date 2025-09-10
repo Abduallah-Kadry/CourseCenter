@@ -12,11 +12,12 @@ public class StudentDto {
 
     private long id;
 
-    private String first_name;
+    private String firstName;
 
-    private String last_name;
+    private String lastName;
 
     private String email;
 
     private int version;
+
 }
