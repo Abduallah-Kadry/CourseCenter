@@ -6,6 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
+// input requests from the front end should be always validated (or the front browser js may enter unreasonable numbers)
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

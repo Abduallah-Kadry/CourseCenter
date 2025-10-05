@@ -28,7 +28,7 @@ public class AuthenticationController {
         authenticationService.register(registerRequest);
     }
 
-    @Operation(summary = "Lo    gin a User", description = "Submit email & password to authenticate a student")
+    @Operation(summary = "Login a User", description = "Submit email & password to authenticate a student")
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/login")
     public AuthenticationResponse login(@Valid @RequestBody AuthenticationRequest authenticationRequest) throws Exception {

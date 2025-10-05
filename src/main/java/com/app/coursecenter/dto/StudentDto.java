@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
+// 1. case to use the dto is to use it to send data to the front
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

@@ -20,10 +20,15 @@ public class StudentController {
         this.studentService = studentService;
     }
 
+
+    // student should see it's profile
+
     @GetMapping("/info")
     public StudentDto getStudentInfo() throws AccessDeniedException {
         return studentService.getStudentInfo();
     }
+
+    // only request for deleting from the admin so this api is for the admin only
 
     @DeleteMapping
     public void deleteStudent() throws AccessDeniedException {

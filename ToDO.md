@@ -27,10 +27,16 @@
   - [ ] fixed db that runs whern ubuntu run and use it using create-drop
   - [ ] automate the insertion of dummy data or something
 - [ ] JWT, SSO, OpenID, OAuth -> several YouTube Videos to learn (practice through the another project)
+  - [x] JWT
+  - [ ] SSO
+  - [ ] OpenID
+  - [x] OAuth
 - [ ] 10 hours SQL -> 2 videos per week (try to see the repo of the questions)
 - [ ] Swagger tutorial (but mainly through the project)
 - [ ] Hibernate (learn through the project)
 - [ ] Unit Testing using the JUNIT 5 (Learn through the book and practice)
+
+
 
 # ABE
 

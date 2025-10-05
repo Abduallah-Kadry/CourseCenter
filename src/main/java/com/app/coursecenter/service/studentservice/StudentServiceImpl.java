@@ -31,18 +31,22 @@ public class StudentServiceImpl implements StudentService {
         this.findAuthenticatedStudent = findAuthenticatedStudent;
     }
 
+    // prevent access if the user is using postman for example without using an actual student profile
     @Override
-    @Transactional(readOnly = true) //
+    @Transactional(readOnly = true)
     public StudentDto getStudentInfo() throws AccessDeniedException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
         if (authentication == null || !authentication.isAuthenticated() ||
                 authentication.getPrincipal().equals("anonymousUser")) {
             throw new AccessDeniedException("Authentication Required");
         }
+
         Student student = (Student) authentication.getPrincipal();
 
         return studentMapper.map(student);
     }
+
 
     @Override
     public void deleteStudent() throws AccessDeniedException {
@@ -53,11 +57,15 @@ public class StudentServiceImpl implements StudentService {
                 authentication.getPrincipal().equals("anonymousUser")) {
             throw new AccessDeniedException("Authentication Required");
         }
+
+        // ? whenever i see casting i think slowww code
+
         Student student = (Student) authentication.getPrincipal();
 
         if (isLastAdmin(student)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Admin cannot delete itself");
         }
+
         studentRepository.delete(student);
     }
 

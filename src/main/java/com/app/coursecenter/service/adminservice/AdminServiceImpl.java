@@ -14,6 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+
+
+
 @Service
 public class AdminServiceImpl implements AdminService {
 
@@ -59,6 +62,8 @@ public class AdminServiceImpl implements AdminService {
     @Override
     @Transactional
     public void deleteNonAdminUser(long id) {
+
+        // ? bullshitest way of doing this function but anyway
 
         Optional<Student> user = studentRepository.findById(id);
         if (user.isEmpty() || user.get().getAuthorities().stream().anyMatch((authority) ->

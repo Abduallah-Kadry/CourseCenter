@@ -12,7 +12,8 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 
     Optional<Student> findByEmail(String email);
 
-    // wtf does this shit do ... why do i need to see how many students are admin user ?
+    // the current logic is to assign the first user as the admin and 2nd to infinity to be role student
+
     @Query("SELECT COUNT(s) from Student s JOIN s.authorities a where a.authority = 'ROLE_ADMIN' ")
     long countAdminStudents();
 }
