@@ -1,10 +1,9 @@
 package com.app.coursecenter.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
+
+import java.util.Set;
 
 
 @Entity
@@ -17,6 +16,9 @@ public class Course {
     private String description;
     private int creditHours;
 
-    // TODO put one to many to many students
+    @ManyToMany(mappedBy = "courses")
+    private Set<Student> students;
+
+
 
 }

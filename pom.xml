@@ -111,6 +111,8 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Map Struct -->
+
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>

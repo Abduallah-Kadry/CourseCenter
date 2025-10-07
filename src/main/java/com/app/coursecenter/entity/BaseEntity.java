@@ -13,13 +13,13 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
+
 @ToString
 @Data
 @MappedSuperclass //
 @EntityListeners(AuditingEntityListener.class)
 public class BaseEntity {
 
-    // put these columns in any registerd table ?
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;

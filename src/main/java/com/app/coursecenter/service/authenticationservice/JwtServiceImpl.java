@@ -33,13 +33,15 @@ public class JwtServiceImpl implements JwtService{
     }
 
     private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
+        final Claims claims = extractAllClaims(token); // extract all claims
+        return claimsResolver.apply(claims); // based on the function we return the needed details
     }
+
+    // ? deprecated but we may update it later when we read the docs
 
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
-                .setSigningKey(getSigningKey())
+                .setSigningKey(getSigningKey()) // get the key we used the first time
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
@@ -62,13 +64,14 @@ public class JwtServiceImpl implements JwtService{
     @Override
     public String generateToken(Map<String, Object> claims, UserDetails userDetails) {
         return Jwts.builder()
-                .setClaims(claims)
+                .setClaims(claims) // empty hashmap
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
+
 
     private Key getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
