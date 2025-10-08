@@ -1,14 +1,18 @@
 package com.app.coursecenter.controller;
 
+import com.app.coursecenter.exception.AuthenticationException;
 import com.app.coursecenter.request.AuthenticationRequest;
 import com.app.coursecenter.request.RegisterRequest;
+import com.app.coursecenter.response.ApiRespond;
 import com.app.coursecenter.response.AuthenticationResponse;
 import com.app.coursecenter.service.authenticationservice.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -31,7 +35,8 @@ public class AuthenticationController {
     @Operation(summary = "Login a User", description = "Submit email & password to authenticate a student")
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/login")
-    public AuthenticationResponse login(@Valid @RequestBody AuthenticationRequest authenticationRequest) throws Exception {
-        return authenticationService.login(authenticationRequest);
+    public ResponseEntity<ApiRespond> login(@Valid @RequestBody AuthenticationRequest authenticationRequest) throws AuthenticationException {
+        return ResponseEntity.ok(new ApiRespond(HttpStatus.OK, "login successfully", authenticationService.login(authenticationRequest)));
+
     }
 }

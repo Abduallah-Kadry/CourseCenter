@@ -2,10 +2,12 @@ package com.app.coursecenter.service.authenticationservice;
 
 import com.app.coursecenter.entity.Authority;
 import com.app.coursecenter.entity.Student;
+import com.app.coursecenter.exception.InvalidCredentialException;
 import com.app.coursecenter.repository.StudentRepository;
 import com.app.coursecenter.request.AuthenticationRequest;
 import com.app.coursecenter.request.RegisterRequest;
 import com.app.coursecenter.response.AuthenticationResponse;
+import io.jsonwebtoken.InvalidClaimException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -44,17 +46,20 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     @Transactional(readOnly = true)
     public AuthenticationResponse login(AuthenticationRequest request) {
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-        );
+            Student student = studentRepository.findByEmail(request.getEmail())
+                    .orElseThrow(() -> new InvalidCredentialException("Invalid email or password"));
 
-        Student student = studentRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
+            String jwtToken = jwtService.generateToken(new HashMap<>(), student);
+            return new AuthenticationResponse(jwtToken);
 
-        String jwtToken = jwtService.generateToken(new HashMap<>(), student);
+        } catch (Exception e) {
+            throw new InvalidCredentialException("Invalid email or password");
+        }
 
-        return new AuthenticationResponse(jwtToken);
     }
 
     private boolean isEmailTaken(String email) {
