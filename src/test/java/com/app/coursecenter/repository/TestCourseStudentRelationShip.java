@@ -18,6 +18,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @DataJpaTest
 
+// generated ai test for the course and student relationship that i didn't decide
+
+
 public class TestCourseStudentRelationShip {
 
     @Autowired
@@ -44,43 +47,6 @@ public class TestCourseStudentRelationShip {
         return student;
     }
 
-    @Test
-    public void testStudentCourseManyToManyRelationship() {
-        // Create a student
-
-        var student = produceOneStudent();
-
-        // Create a course
-        Course course = produceOneCourse();
-
-        // Save course first to generate ID
-        course = courseRepository.save(course);
-
-        // Associate course with student
-        student.setCourses(Collections.singleton(course));
-
-        // Save student (which should also persist the relationship)
-        student = studentRepository.save(student);
-
-        // Clear the persistence context to ensure we're getting fresh data from the database
-        studentRepository.flush();
-
-        // Retrieve the student and verify the relationship
-        Optional<Student> foundStudent = studentRepository.findById(student.getId());
-        assertTrue(foundStudent.isPresent(), "Student should be found");
-
-        Set<Course> studentCourses = foundStudent.get().getCourses();
-
-
-        // Verify the inverse relationship
-        Optional<Course> foundCourse = courseRepository.findById(course.getId());
-        assertTrue(foundCourse.isPresent(), "Course should be found");
-
-        Set<Student> courseStudents = foundCourse.get().getStudents();
-        assertFalse(courseStudents.isEmpty(), "Course should have students");
-        assertEquals(1, courseStudents.size(), "Course should have 1 student");
-        assertEquals(student.getId(), courseStudents.iterator().next().getId(), "Student IDs should match");
-    }
 
 
 }
