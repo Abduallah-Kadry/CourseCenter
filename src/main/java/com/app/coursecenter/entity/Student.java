@@ -50,7 +50,7 @@ public class Student extends BaseEntity implements UserDetails {
     )
     private Set<Course> courses;
 
-// student is the owning side so put the add, remove methods here
+    // student is the owning side so put the add, remove methods here
 
     public void addCourse(Course course) {
         courses.add(course);

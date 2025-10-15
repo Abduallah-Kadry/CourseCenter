@@ -7,7 +7,6 @@ import com.app.coursecenter.repository.StudentRepository;
 import com.app.coursecenter.request.AuthenticationRequest;
 import com.app.coursecenter.request.RegisterRequest;
 import com.app.coursecenter.response.AuthenticationResponse;
-import io.jsonwebtoken.InvalidClaimException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,9 +34,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     @Transactional
-    public void register(RegisterRequest input) throws Exception {
+    public void register(RegisterRequest input) {
         if (isEmailTaken(input.getEmail())) {
-            throw new Exception("Email already taken");
+            throw new RuntimeException("Email already taken");
         }
         Student student = buildNewUser(input);
         studentRepository.save(student);
@@ -61,6 +60,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
     }
+
+
 
     private boolean isEmailTaken(String email) {
         return studentRepository.findByEmail(email).isPresent();

@@ -16,6 +16,15 @@ import org.springframework.web.server.ResponseStatusException;
 public class GlobalExceptionHandler {
 
 
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiRespond> handleResourceNotFound(ResourceNotFoundException ex) {
+        HttpStatus status = HttpStatus.NOT_FOUND;
+        // Delegate to helper with appropriate status
+        return ResponseEntity.status(status)
+                .body(new ApiRespond(status,ex.getMessage(),null));
+    }
+
+
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ApiRespond> handleAuthenticationException(AuthenticationException ex) {
         HttpStatus status = HttpStatus.UNAUTHORIZED;

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Embeddable

@@ -7,6 +7,7 @@ import com.app.coursecenter.repository.StudentRepository;
 import com.app.coursecenter.request.PasswordUpdateRequest;
 import com.app.coursecenter.util.FindAuthenticatedStudent;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.nio.file.AccessDeniedException;
 
 @Service
 public class StudentServiceImpl implements StudentService {
@@ -35,6 +35,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
     @Transactional(readOnly = true)
     public StudentDto getStudentInfo() throws AccessDeniedException {
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !authentication.isAuthenticated() ||
@@ -47,6 +48,7 @@ public class StudentServiceImpl implements StudentService {
         return studentMapper.map(student);
     }
 
+    // ? should be transactional operation
 
     @Override
     public void deleteStudent() throws AccessDeniedException {
@@ -58,7 +60,8 @@ public class StudentServiceImpl implements StudentService {
             throw new AccessDeniedException("Authentication Required");
         }
 
-        // ? whenever i see casting i think slowww code
+
+        // ? whenever i see casting i think slowwwwww code
 
         Student student = (Student) authentication.getPrincipal();
 
@@ -104,10 +107,12 @@ public class StudentServiceImpl implements StudentService {
     private boolean isLastAdmin(Student student) {
         boolean isAdmin = student.getAuthorities().stream()
                 .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+
         if (isAdmin) {
             long adminCount = studentRepository.countAdminStudents();
             return adminCount <= 1;
         }
+
         return false;
     }
 }

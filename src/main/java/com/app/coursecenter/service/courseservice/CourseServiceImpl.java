@@ -1,9 +1,11 @@
 package com.app.coursecenter.service.courseservice;
 
 import com.app.coursecenter.entity.Course;
+import com.app.coursecenter.exception.ResourceNotFoundException;
 import com.app.coursecenter.mapper.CourseMapper;
 import com.app.coursecenter.repository.CourseRepository;
 import com.app.coursecenter.request.CreateCourseRequest;
+import com.app.coursecenter.request.UpdateCourseRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,20 +26,16 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public Course getCourseById(Long id) {
-        return null;
+        return courseRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Course Not found!"));
     }
 
     @Override
     public Course addCourse(CreateCourseRequest course) {
-        try {
-            return courseRepository.save(courseMapper.courseRequestToCourse(course));
-        } catch (Exception e) {
-            throw e;
-        }
+        return courseRepository.save(courseMapper.courseRequestToCourse(course));
     }
 
     @Override
-    public Course updateCourse(Long id, Course course) {
+    public Course updateCourse(Long id, UpdateCourseRequest course) {
         return null;
     }
 

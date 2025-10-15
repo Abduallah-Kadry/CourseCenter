@@ -1,8 +1,8 @@
 package com.app.coursecenter.util;
 
 import com.app.coursecenter.entity.Student;
+import org.springframework.security.access.AccessDeniedException;
 
-import java.nio.file.AccessDeniedException;
 
 public interface FindAuthenticatedStudent {
 

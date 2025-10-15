@@ -25,4 +25,3 @@ Last-Modified: 2025-09-05 00:30
 - i need to go to the docker to see how every thing is composed and integrated
 
 
-![[README 2025-09-04.excalidraw]]
