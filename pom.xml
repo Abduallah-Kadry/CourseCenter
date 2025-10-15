@@ -184,7 +184,7 @@
                 <version>3.4.2</version>
                 <configuration>
                     <to>
-                        <image>abdullahsaleh1911/${project.artifactId}</image>
+                        <image>${project.artifactId}</image>
                     </to>
                 </configuration>
             </plugin>

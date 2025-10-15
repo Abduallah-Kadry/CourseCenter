@@ -3,9 +3,10 @@ server:
 
 spring:
     datasource:
-        url: jdbc:mysql://localhost:3307/tododb?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
-        username: root
-        password: secret
+        # ✅ Use the Docker service name (not localhost)
+        url: jdbc:mysql://mysql:3306/coursecenterdb?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
+        username: courseuser
+        password: coursepass
         driver-class-name: com.mysql.cj.jdbc.Driver
 
     jpa:
@@ -18,32 +19,21 @@ spring:
                 format_sql: true
 
     kafka:
-        kafka:
-            bootstrap-servers: localhost:29092
-            datasource:
-                url: jdbc:mysql://localhost:3307/coursecenterdb
-                username: courseuser
-                password: coursepass
-                driver-class-name: com.mysql.cj.jdbc.Driver
+        bootstrap-servers: kafka:9092
 
-        # Producer Configuration - JSON
         producer:
             key-serializer: org.apache.kafka.common.serialization.StringSerializer
             value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
             acks: all
             retries: 3
             properties:
-                # Idempotence for exactly-once semantics
                 enable.idempotence: true
                 max.in.flight.requests.per.connection: 5
-                # Compression
                 compression.type: snappy
-                # Batch settings
                 batch.size: 16384
                 linger.ms: 10
                 buffer.memory: 33554432
 
-        # Consumer Configuration - JSON
         consumer:
             group-id: reservation-service-group
             auto-offset-reset: earliest
@@ -51,34 +41,28 @@ spring:
             value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
             enable-auto-commit: false
             properties:
-                # Trust your own packages for deserialization
                 spring.json.trusted.packages: "com.app.coursecenter.dto"
-                # Consumer performance tuning
                 max.poll.records: 500
                 fetch.min.bytes: 1024
                 fetch.max.wait.ms: 500
                 session.timeout.ms: 30000
                 heartbeat.interval.ms: 10000
 
-        # Listener Configuration
         listener:
             ack-mode: manual
             concurrency: 3
             type: batch
 
-# JWT Configuration
 jwt:
     secret: ${JWT_SECRET:370fc2ad32927ff329d2807b020a92cbde3d349b44c19304d3c8e8b107365042}
     expiration: 900000  # 15 minutes
 
-# Course Reservation Configuration
 course-reservation:
     topic:
         name: course-reservation-events
-        partitions: 3  # Reduced from 6 for simplicity
-        replication-factor: 1  # Changed from 3 for local dev
+        partitions: 3
+        replication-factor: 1
 
-# Logging Configuration
 logging:
     level:
         com.app.coursecenter: DEBUG
@@ -87,7 +71,6 @@ logging:
     pattern:
         console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
 
-# Actuator endpoints for monitoring
 management:
     endpoints:
         web:
