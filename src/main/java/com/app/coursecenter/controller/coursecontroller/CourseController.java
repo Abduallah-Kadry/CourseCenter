@@ -13,12 +13,9 @@ import java.util.Set;
 @RestController
 @RequestMapping("/course")
 @RequiredArgsConstructor
-
-
 // the student should gets it's enrolled courses
 // the stuednt should request to be added to the course
 // the student should not register in more than 3 courses
-
 
 public class CourseController {
 
@@ -33,8 +30,6 @@ public class CourseController {
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
-
-
     }
 
     @GetMapping("")
@@ -45,19 +40,15 @@ public class CourseController {
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
-
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Set<Course>> getCoursesByStudentId(@PathVariable("id") Long studentId) {
-        try {
-            //
-            return ResponseEntity.ok(courseService.getCoursesByStudentId(studentId));
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
-
-    }
-
-
+//    @GetMapping("/{id}")
+//    public ResponseEntity<Set<Course>> getCoursesByStudentId(@PathVariable("id") Long studentId) {
+//        try {
+//            //
+//            return ResponseEntity.ok(courseService.getCoursesByStudentId(studentId));
+//        } catch (Exception e) {
+//            return ResponseEntity.internalServerError().build();
+//        }
+//    }
 }

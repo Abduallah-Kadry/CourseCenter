@@ -5,6 +5,7 @@ import com.app.coursecenter.request.PasswordUpdateRequest;
 import com.app.coursecenter.service.studentservice.StudentService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
@@ -20,6 +21,17 @@ public class StudentController {
         this.studentService = studentService;
     }
 
+    @PostMapping("/reserve")
+    public ResponseEntity<?> reserveCourse(@RequestParam Long studentId, @RequestParam Long courseId) {
+        studentService.requestCourseReservation(studentId, courseId);
+        return ResponseEntity.accepted().body("Reservation command sent");
+    }
+
+    @DeleteMapping("/{reservationId}")
+    public ResponseEntity<?> cancelReservation(@PathVariable Long reservationId) {
+        studentService.cancelCourseReservation(reservationId);
+        return ResponseEntity.accepted().body("Cancel command sent");
+    }
 
     // student should see it's profile
 

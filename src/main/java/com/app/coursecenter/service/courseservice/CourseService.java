@@ -19,5 +19,5 @@ public interface CourseService {
     Boolean deleteCourse(Long id);
 
 
-    Set<Course> getCoursesByStudentId(Long studentId);
+    //Set<Course> getCoursesByStudentId(Long studentId);
 }

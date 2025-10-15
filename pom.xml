@@ -13,14 +13,16 @@
     </parent>
 
     <groupId>com.example</groupId>
-    <artifactId>CourseCenter</artifactId>
+    <artifactId>coursecenter</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>CourseCenter</name>
+    <name>coursecenter</name>
     <description>CourseCenter</description>
 
     <properties>
         <java.version>17</java.version>
+        <confluent.version>7.5.0</confluent.version>
+        <avro.version>1.11.3</avro.version>
     </properties>
 
     <dependencies>
@@ -112,13 +114,34 @@
         </dependency>
 
         <!-- Map Struct -->
-
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
             <version>1.6.3</version>
         </dependency>
+
+        <!-- Kafka -->
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+        </dependency>
+
     </dependencies>
+
+    <!-- CRITICAL: Add Confluent Maven Repository -->
+    <repositories>
+        <repository>
+            <id>confluent</id>
+            <name>Confluent Maven Repository</name>
+            <url>https://packages.confluent.io/maven/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 
     <build>
         <plugins>
@@ -144,7 +167,7 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok-mapstruct-binding</artifactId>
-                            <version>1.6.3</version>
+                            <version>0.2.0</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
@@ -155,7 +178,16 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>3.4.2</version>
+                <configuration>
+                    <to>
+                        <image>abdullahsaleh1911/${project.artifactId}</image>
+                    </to>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
-
 </project>

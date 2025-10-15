@@ -5,7 +5,7 @@ import com.app.coursecenter.request.AuthenticationRequest;
 import com.app.coursecenter.request.RegisterRequest;
 import com.app.coursecenter.response.ApiRespond;
 import com.app.coursecenter.response.AuthenticationResponse;
-import com.app.coursecenter.service.AuthenticationService;
+import com.app.coursecenter.service.authenticationservice.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
