@@ -66,3 +66,88 @@ docker run -d ^
 
 curl -H "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhaXNhbGVoQGVqYWRhLmNvbSIsImlhdCI6MTc2MDU1NjcxMywiZXhwIjoxNzYwNTU3NjEzfQ.vhF8mlxNP3dhu6Uh3EQQT37WCewpUBKpsCo1tRLk46w" \
      "http://localhost:8080/api/students/reserve?studentId=1&courseId=1"
+
++---------------------------------------------------------------+
+|                         CourseCenter                          |
+|---------------------------------------------------------------|
+|  Course Service       Student Service       Reservation Service|
+|     (API)                 (API)                   (API)        |
++---------------------------------------------------------------+
+             |                        |
+             |                        | emits
+             |                        v
+             |               Kafka Topics (Event Bus)
+             |                     |
+             |                     v
+             |             Notification Service
+             |                 (Consumer)
+             +----------------------+
+
+macro (system-level) to micro (internal design)
+Reservation Service → emits event → Kafka → Notification Service → sends message to student
+-----------------------------------------------------------------------------------------------------
+Why It’s Powerful
+Loose coupling:
+Reservation Service doesn’t know who listens. It just emits an event.
+Notification Service can be added or removed without modifying Reservation logic.
+
+Scalability:
+Each service can scale independently (e.g., more Notification Service instances if traffic spikes).
+
+Extensibility:
+You can add more consumers later (Analytics Service, Audit Service, etc.) without touching producers.
+
+-----------------------------------------------------------------------------------------------------------
+
+🔄 Flow
+
+Reservation Service (Producer)
+
+Converts the new reservation into an event.
+
+Sends JSON to Kafka topic.
+
+Kafka Broker
+
+Stores and distributes events.
+
+Notification Service (Consumer)
+
+Listens to the same topic.
+
+Reads the event, processes it, and triggers the correct notification (email/SMS/etc.).
+
++---------------------------------------------------+
+|               Notification Service                |
+|---------------------------------------------------|
+| 1. Kafka Consumer Layer                           |
+|    - Listens to events from Kafka                 |
+|    - Parses event JSON → Java object              |
+|                                                   |
+| 2. Event Processing Layer                         |
+|    - Routes event based on type                   |
+|    - Handles logic like "Reservation Created"     |
+|                                                   |
+| 3. Notification Channels Layer                    |
+|    - EmailSenderService → uses SMTP               |
+|    - SmsSenderService → uses Twilio API           |
+|    - InAppNotificationService → stores in DB      |
+|                                                   |
+| 4. Persistence Layer (optional)                   |
+|    - NotificationRepository (for history)         |
+|                                                   |
+| 5. REST API Layer (optional)                      |
+|    - GET /notifications?studentId=10              |
+|      → Returns unread notifications               |
++---------------------------------------------------+
+Example Event Lifecycle
+
+Here’s the end-to-end event journey:
+
+Step	Component	Action
+1	Student calls POST /reserve	Create new reservation
+2	Reservation Service	Saves to DB and emits ReservationCreatedEvent
+3	Kafka	Stores the event in topic
+4	Notification Service	Listens and consumes the event
+5	Notification Service	Sends email to student
+6	(Optional) UI	Displays “Reservation Successful” + sends confirmation email

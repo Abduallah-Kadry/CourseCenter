@@ -95,6 +95,20 @@ services:
       - course-center-network
     restart: always
 
+  notification-service:
+    image: notification-service
+    build:
+      context: ./notification-service
+    depends_on:
+      - kafka
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_MAIL_USERNAME: abdullahibrahimothman@gmail.com
+      SPRING_MAIL_PASSWORD: nsmn zwfp rqgt covz
+
+    networks:
+      - course-center-network
+
 networks:
   course-center-network:
     driver: bridge
