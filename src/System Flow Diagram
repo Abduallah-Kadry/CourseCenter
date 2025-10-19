@@ -62,3 +62,7 @@ docker run -d ^
   --name mysqldb ^
   -p 3307:3306 ^
   mysql:latest
+
+
+curl -H "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhaXNhbGVoQGVqYWRhLmNvbSIsImlhdCI6MTc2MDU1NjcxMywiZXhwIjoxNzYwNTU3NjEzfQ.vhF8mlxNP3dhu6Uh3EQQT37WCewpUBKpsCo1tRLk46w" \
+     "http://localhost:8080/api/students/reserve?studentId=1&courseId=1"

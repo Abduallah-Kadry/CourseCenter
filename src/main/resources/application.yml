@@ -4,7 +4,7 @@ server:
 spring:
   application:
     name: CourseCenter
-# see if the security config that abe provided is overriding the current setting 
+# see if the security config that abe provided is overriding the current setting
 #  security:
 #    user:
 #      name: aks
@@ -19,7 +19,7 @@ spring:
 
     jpa:
         hibernate:
-            ddl-auto: create-drop
+            ddl-auto: update
         show-sql: true
         properties:
             hibernate:
@@ -34,6 +34,7 @@ spring:
                 username: root
                 password: 502250
                 driver-class-name: com.mysql.cj.jdbc.Driver
+        bootstrap-servers: kafka:9092
 
         # Producer Configuration - JSON
         producer:
@@ -84,8 +85,8 @@ jwt:
 course-reservation:
     topic:
         name: course-reservation-events
-        partitions: 3  # Reduced from 6 for simplicity
-        replication-factor: 1  # Changed from 3 for local dev
+        partitions: 3
+        replication-factor: 1
 
 # Logging Configuration
 logging:

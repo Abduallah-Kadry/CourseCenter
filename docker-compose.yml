@@ -1,5 +1,5 @@
 services:
-  # 🦓 Zookeeper - coordinates Kafka brokers
+  # 🦓 Zookeeper
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
     container_name: zookeeper
@@ -11,15 +11,15 @@ services:
     networks:
       - course-center-network
 
-  # 🦩 Kafka Broker - message broker for events
+  # 🦩 Kafka Broker
   kafka:
     image: confluentinc/cp-kafka:7.5.0
     container_name: kafka
     depends_on:
       - zookeeper
     ports:
-      - "9092:9092"       # internal broker port
-      - "29092:29092"     # external port for Spring Boot
+      - "9092:9092"
+      - "29092:29092"
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -38,44 +38,18 @@ services:
       timeout: 10s
       retries: 5
 
-  # 🧱 Schema Registry (optional, can be kept for Avro/JSON schemas)
-  schema-registry:
-    image: confluentinc/cp-schema-registry:7.5.0
-    container_name: schema-registry
-    depends_on:
-      kafka:
-        condition: service_healthy
-    ports:
-      - "8081:8081"
-    environment:
-      SCHEMA_REGISTRY_HOST_NAME: schema-registry
-      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: kafka:9092
-      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
-      SCHEMA_REGISTRY_KAFKASTORE_TOPIC: _schemas
-      SCHEMA_REGISTRY_SCHEMA_COMPATIBILITY_LEVEL: backward
-    networks:
-      - course-center-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8081/subjects"]
-      interval: 10s
-      timeout: 10s
-      retries: 5
-
-  # 📊 Kafka UI - useful for monitoring topics/events
+  # 📊 Kafka UI
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
     container_name: kafka-ui
     depends_on:
       - kafka
-      - schema-registry
     ports:
       - "8090:8080"
     environment:
       KAFKA_CLUSTERS_0_NAME: course-center
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
       KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
-      KAFKA_CLUSTERS_0_SCHEMAREGISTRY: http://schema-registry:8081
-      DYNAMIC_CONFIG_ENABLED: 'true'
     networks:
       - course-center-network
 
@@ -99,6 +73,27 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  # 🚀 Your Spring Boot Application (prebuilt image)
+  coursecenter-app:
+    image: coursecenter-app          # your prebuilt image name
+    container_name: coursecenter-app
+    depends_on:
+      mysql:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/coursecenterdb
+      SPRING_DATASOURCE_USERNAME: courseuser
+      SPRING_DATASOURCE_PASSWORD: coursepass
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8080:8080"
+    networks:
+      - course-center-network
+    restart: always
 
 networks:
   course-center-network:
