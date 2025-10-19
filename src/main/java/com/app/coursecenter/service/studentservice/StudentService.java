@@ -2,6 +2,8 @@ package com.app.coursecenter.service.studentservice;
 
 import com.app.coursecenter.dto.StudentDto;
 import com.app.coursecenter.request.PasswordUpdateRequest;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.nio.file.AccessDeniedException;
 
@@ -15,4 +17,8 @@ public interface StudentService {
     void deleteStudent() throws AccessDeniedException;
 
     void updatePassword(PasswordUpdateRequest passwordUpdateRequest) throws AccessDeniedException;
+
+    void requestCourseReservation(Long studentId, Long courseId);
+
+    void cancelCourseReservation(Long reservationId);
 }

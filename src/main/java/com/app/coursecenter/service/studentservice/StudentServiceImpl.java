@@ -5,9 +5,9 @@ import com.app.coursecenter.entity.Student;
 import com.app.coursecenter.mapper.StudentMapper;
 import com.app.coursecenter.repository.StudentRepository;
 import com.app.coursecenter.request.PasswordUpdateRequest;
+import com.app.coursecenter.service.CourseReservationCommandProducer;
 import com.app.coursecenter.util.FindAuthenticatedStudent;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.nio.file.AccessDeniedException;
 
 @Service
 public class StudentServiceImpl implements StudentService {
@@ -23,19 +24,29 @@ public class StudentServiceImpl implements StudentService {
     private final StudentMapper studentMapper;
     private final PasswordEncoder passwordEncoder;
     private final FindAuthenticatedStudent findAuthenticatedStudent;
+    private final CourseReservationCommandProducer producer;
 
-    public StudentServiceImpl(StudentRepository studentRepository, StudentMapper studentMapper, PasswordEncoder passwordEncoder, FindAuthenticatedStudent findAuthenticatedStudent) {
+
+    public StudentServiceImpl(StudentRepository studentRepository, StudentMapper studentMapper, PasswordEncoder passwordEncoder, FindAuthenticatedStudent findAuthenticatedStudent, CourseReservationCommandProducer producer) {
         this.studentRepository = studentRepository;
         this.studentMapper = studentMapper;
         this.passwordEncoder = passwordEncoder;
         this.findAuthenticatedStudent = findAuthenticatedStudent;
+        this.producer = producer;
+    }
+
+    public void requestCourseReservation(Long studentId, Long courseId) {
+        producer.sendReserveCourseCommand(studentId, courseId);
+    }
+
+    public void cancelCourseReservation(Long reservationId) {
+        //producer.sendCancelReservationCommand(reservationId);
     }
 
     // prevent access if the user is using postman for example without using an actual student profile
     @Override
     @Transactional(readOnly = true)
     public StudentDto getStudentInfo() throws AccessDeniedException {
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !authentication.isAuthenticated() ||
@@ -112,7 +123,6 @@ public class StudentServiceImpl implements StudentService {
             long adminCount = studentRepository.countAdminStudents();
             return adminCount <= 1;
         }
-
         return false;
     }
 }

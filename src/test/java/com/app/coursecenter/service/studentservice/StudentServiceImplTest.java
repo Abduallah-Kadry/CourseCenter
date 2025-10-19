@@ -37,6 +37,9 @@ class StudentServiceImplTest {
     // ! one major note here that we are using a global static class (SecurityContextConfig) in the testing
     // ! instead of wrapping it to be used in the test to separate the tests objects from the app objects
 
+    // * well i need to revamp this tests to delete the abstarct class ... it is faliua3 ...
+    // * i thought that i need to run the same auth test before each execution but this is just wrong the actual
+
     @InjectMocks
     StudentServiceImpl studentService;
 
@@ -162,6 +165,8 @@ class StudentServiceImplTest {
                 result = studentService.getStudentInfo();
             } catch (AccessDeniedException e) {
                 throw new RuntimeException(e);
+            } catch (java.nio.file.AccessDeniedException e) {
+                throw new RuntimeException(e);
             }
 
             assertNotNull(result);
@@ -229,6 +234,7 @@ class StudentServiceImplTest {
             assertDoesNotThrow(()-> studentService.deleteStudent());
 
             verify(studentRepository,times(1)).delete(student);
+            // you may use verifyNoInteractions() and add some mock to make sure some mock is not used
 
         }
 

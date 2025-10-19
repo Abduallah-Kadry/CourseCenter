@@ -1,0 +1,64 @@
+
+         [ REST API / Controller ]
+                     │
+                     ▼
+        (Creates ReserveCourseCommand)
+                     │
+                     ▼
+        [ Kafka Producer → Topic: course-reservation-commands ]
+                     │
+                     ▼
+        [ Kafka Consumer (CourseReservationService) ]
+                     │
+         Executes Command via Handler
+                     │
+                     ▼
+        [ Kafka Producer → Topic: course-reservation-events ]
+                     │
+                     ▼
+        [ Kafka Sink Connector ]
+                     │
+                     ▼
+           Inserts into Database (course_reservations)
+
+[Controller]
+    ↓
+[StudentService]
+    ↓
+[CourseReservationCommandProducer] → topic: course-reservation-commands
+    ↓
+[CommandListener] → executes ReserveCourseCommand
+    ↓
+[CourseReservationService.reserveCourse()]
+    ↓
+[CourseReservationEvent] created
+    ↓
+Publish → topic: course-reservation-events
+    ↓
+[Kafka Connect Sink Connector]
+    ↓
+[PostgreSQL] course_reservation_events table
+
+
+
+http://localhost:8080/swagger-ui/index.html
+http://localhost:8080/api/auth/login
+{
+  "firstName": "string",
+  "lastName": "string",
+  "email": "string",
+  "password": "string"
+}
+
+curl http://localhost:8083/connectors
+curl -X POST -H "Content-Type: application/json" --data "@src\connectors\course-reservation-sink.json" http://localhost:8083/connectors
+curl http://localhost:8083/connectors/course-reservation-sink/status
+
+http://localhost:8080/api/students/1/courses/1/reserve
+
+docker run -d ^
+  -e MYSQL_ROOT_PASSWORD=secret ^
+  -e MYSQL_DATABASE=tododb ^
+  --name mysqldb ^
+  -p 3307:3306 ^
+  mysql:latest

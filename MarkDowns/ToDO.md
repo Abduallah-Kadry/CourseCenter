@@ -18,6 +18,8 @@
 - [ ] integrate Postman with swagger and see how to easily define end points to test them (docs, ins and outs,
   integrations, e2e)
 - [ ] start fokin testing the functions of the app
+- [ ] put pagination
+- [ ] Learn mappers using map struct 
 
 ### To learn
 ---
