@@ -165,8 +165,6 @@ class StudentServiceImplTest {
                 result = studentService.getStudentInfo();
             } catch (AccessDeniedException e) {
                 throw new RuntimeException(e);
-            } catch (java.nio.file.AccessDeniedException e) {
-                throw new RuntimeException(e);
             }
 
             assertNotNull(result);

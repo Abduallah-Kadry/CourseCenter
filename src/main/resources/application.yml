@@ -2,20 +2,12 @@ server:
     port: 8080
 
 spring:
-  application:
-    name: CourseCenter
-# see if the security config that abe provided is overriding the current setting
-#  security:
-#    user:
-#      name: aks
-#      password: 123
-
-  datasource:
-    url: jdbc:mysql://localhost:3306/CourseCenter
-    username: root
-    password: 502250
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-
+    datasource:
+        # ✅ Use the Docker service name (not localhost)
+        url: jdbc:mysql://mysql:3306/coursecenterdb?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
+        username: courseuser
+        password: coursepass
+        driver-class-name: com.mysql.cj.jdbc.Driver
 
     jpa:
         hibernate:
@@ -30,11 +22,10 @@ spring:
         kafka:
             bootstrap-servers: localhost:29092
             datasource:
-                url: jdbc:mysql://localhost:3307/CourseCenter
-                username: root
-                password: 502250
+                url: jdbc:mysql://localhost:3307/coursecenterdb
+                username: courseuser
+                password: coursepass
                 driver-class-name: com.mysql.cj.jdbc.Driver
-        bootstrap-servers: kafka:9092
 
         # Producer Configuration - JSON
         producer:
