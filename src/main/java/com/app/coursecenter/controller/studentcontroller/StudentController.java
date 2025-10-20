@@ -22,8 +22,8 @@ public class StudentController {
     }
 
     @PostMapping("/reserve")
-    public ResponseEntity<?> reserveCourse(@RequestParam Long studentId, @RequestParam Long courseId) {
-        studentService.requestCourseReservation(studentId, courseId);
+    public ResponseEntity<?> reserveCourse(@RequestParam Long courseId) {
+        studentService.requestCourseReservation(courseId);
         return ResponseEntity.accepted().body("Reservation command sent");
     }
 

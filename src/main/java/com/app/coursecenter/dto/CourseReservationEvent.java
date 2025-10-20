@@ -12,12 +12,16 @@ public class CourseReservationEvent {
     private Long studentId;
     private Long courseId;
     private Long reservationId;
+    private String studentEmail;
     private LocalDateTime eventTime = LocalDateTime.now();
 
-    public CourseReservationEvent(String eventType, Long studentId, Long courseId, Long reservationId) {
+    public CourseReservationEvent(String eventType, Long studentId, Long courseId, Long reservationId,
+                                  String StudentEmail) {
         this.eventType = eventType;
         this.studentId = studentId;
         this.courseId = courseId;
         this.reservationId = reservationId;
+        this.studentEmail = StudentEmail;
+
     }
 }

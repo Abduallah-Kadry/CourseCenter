@@ -18,7 +18,7 @@ public interface StudentService {
 
     void updatePassword(PasswordUpdateRequest passwordUpdateRequest) throws AccessDeniedException;
 
-    void requestCourseReservation(Long studentId, Long courseId);
+    void requestCourseReservation(Long courseId);
 
     void cancelCourseReservation(Long reservationId);
 }

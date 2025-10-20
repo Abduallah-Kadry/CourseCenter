@@ -1,10 +1,10 @@
 package com.app.coursecenter.service;
 
 import com.app.coursecenter.dto.CourseReservationEvent;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+
 
 @Service
 public class CourseReservationCommandProducer {
@@ -18,17 +18,19 @@ public class CourseReservationCommandProducer {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void sendReserveCourseCommand(Long studentId, Long courseId) {
-        CourseReservationEvent event = new CourseReservationEvent(
-                "ReservationCreatedEvent", studentId, courseId, null
+    public void sendReserveCourseCommand(Long studentId,String studentEmail, Long courseId) {
+        CourseReservationEvent event = null;
+        event = new CourseReservationEvent(
+                "ReservationCreatedEvent", studentId, courseId, null, studentEmail
         );
         kafkaTemplate.send(topicName, event);
         System.out.println("📤 Sent event: " + event);
     }
 
-    public void sendCancelReservationCommand(Long reservationId, Long studentId, Long courseId) {
-        CourseReservationEvent event = new CourseReservationEvent(
-                "ReservationCancelledEvent", studentId, courseId, reservationId
+    public void sendCancelReservationCommand(Long reservationId, Long studentId, String studentEmail, Long courseId) {
+        CourseReservationEvent event = null;
+        event = new CourseReservationEvent(
+                "ReservationCancelledEvent", studentId, courseId, reservationId, studentEmail
         );
         kafkaTemplate.send(topicName, event);
         System.out.println("📤 Sent event: " + event);

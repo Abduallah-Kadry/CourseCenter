@@ -24,12 +24,11 @@ public class CommandListener {
 
         Command command = switch (type) {
             case "ReserveCourseCommand" ->
-                    new ReserveCourseCommand(node.get("studentId").asLong(), node.get("courseId").asLong(), reservationService);
+                    new ReserveCourseCommand(node.get("studentId").asLong() ,node.get("courseId").asLong() ,node.get("studentEmail").toString(),reservationService);
             case "CancelReservationCommand" ->
-                    new CancelReservationCommand(node.get("reservationId").asLong(), reservationService);
+                    new CancelReservationCommand(node.get("reservationId").asLong(), reservationService, node.get("studentEmail").toString());
             default -> throw new IllegalArgumentException("Unknown command type: " + type);
         };
-
         command.execute();
     }
 }

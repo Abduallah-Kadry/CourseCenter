@@ -35,8 +35,24 @@ public class StudentServiceImpl implements StudentService {
         this.producer = producer;
     }
 
-    public void requestCourseReservation(Long studentId, Long courseId) {
-        producer.sendReserveCourseCommand(studentId, courseId);
+    public void requestCourseReservation(Long courseId) {
+        producer.sendReserveCourseCommand(getCurrentUserId(),getCurrentUserEmail() ,courseId);
+    }
+
+    private Long getCurrentUserId() {
+        try {
+            return findAuthenticatedStudent.getAuthenticatedStudent().getId();
+        } catch (AccessDeniedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String getCurrentUserEmail() {
+        try {
+            return studentRepository.findById(findAuthenticatedStudent.getAuthenticatedStudent().getId()).get().getEmail();
+        } catch (AccessDeniedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void cancelCourseReservation(Long reservationId) {

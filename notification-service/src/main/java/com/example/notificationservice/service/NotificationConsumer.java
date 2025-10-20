@@ -24,7 +24,7 @@ public class NotificationConsumer {
             CourseReservationEvent event = objectMapper.readValue(message, CourseReservationEvent.class);
 
             switch (event.getEventType()) {
-                case "ReservationCreatedEvent" -> sendEmail(event, "A7A Reservation Confirmed!");
+                case "ReservationCreatedEvent" -> sendEmail(event, "A7A Reservation Confirmed! Fuck You Bitch يلا يعم من هنا خخخخخخ");
                 case "ReservationCancelledEvent" -> sendEmail(event, "A7A Reservation Cancelled!");
             }
 
@@ -35,7 +35,7 @@ public class NotificationConsumer {
 
     private void sendEmail(CourseReservationEvent event, String subject) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo("abdullahibrahimothman@gmail.com"); // TODO: fetch from DB
+        message.setTo(event.getStudentEmail()); // TODO: fetch from DB
         message.setSubject(subject);
         message.setText("Your reservation event: " + event);
         mailSender.send(message);
