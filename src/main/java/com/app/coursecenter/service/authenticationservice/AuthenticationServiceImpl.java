@@ -68,7 +68,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private Student buildNewUser(RegisterRequest input) {
         Student student = new Student();
-        student.setId(0);
+        student.setId(0L);
         student.setFirstName(input.getFirstName());
         student.setLastName(input.getLastName());
         student.setEmail(input.getEmail());

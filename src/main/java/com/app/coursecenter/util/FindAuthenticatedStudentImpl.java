@@ -16,8 +16,8 @@ public class FindAuthenticatedStudentImpl implements FindAuthenticatedStudent {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication != null || !authentication.isAuthenticated()
-                || authentication.getPrincipal().equals("anonymousUser")) {
+        if ((authentication == null) || !authentication.isAuthenticated()
+                || "anonymousUser".equals(authentication.getPrincipal())) {
 
             throw new AccessDeniedException("Authentication required");
         }

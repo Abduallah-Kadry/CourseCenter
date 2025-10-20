@@ -26,7 +26,7 @@ public class Student extends BaseEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(nullable = false)
-    private long id;
+    private Long id;
 
     @Column(nullable = false)
     private String firstName; // firstName
@@ -80,6 +80,10 @@ public class Student extends BaseEntity implements UserDetails {
     @Override
     public String getUsername() {
         return email;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     @Override

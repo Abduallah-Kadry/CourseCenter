@@ -24,8 +24,12 @@ public class NotificationConsumer {
             CourseReservationEvent event = objectMapper.readValue(message, CourseReservationEvent.class);
 
             switch (event.getEventType()) {
-                case "ReservationCreatedEvent" -> sendEmail(event, "A7A Reservation Confirmed! Fuck You Bitch يلا يعم من هنا خخخخخخ");
-                case "ReservationCancelledEvent" -> sendEmail(event, "A7A Reservation Cancelled!");
+                case "ReservationCreatedEvent" ->
+                        sendEmail(event, "Course Reservation Confirmed", buildReservationMessage(event, "confirmed"));
+                case "ReservationCancelledEvent" ->
+                        sendEmail(event, "Course Reservation Cancelled", buildReservationMessage(event, "cancelled"));
+                default ->
+                        System.err.println("Unknown event type: " + event.getEventType());
             }
 
         } catch (Exception e) {
@@ -33,12 +37,34 @@ public class NotificationConsumer {
         }
     }
 
-    private void sendEmail(CourseReservationEvent event, String subject) {
+    private void sendEmail(CourseReservationEvent event, String subject, String body) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(event.getStudentEmail()); // TODO: fetch from DB
+        message.setTo(event.getStudentEmail());
         message.setSubject(subject);
-        message.setText("Your reservation event: " + event);
+        message.setText(body);
         mailSender.send(message);
     }
-}
 
+    private String buildReservationMessage(CourseReservationEvent event, String status) {
+        return String.format(
+                """
+                Hello,
+
+                Your course reservation has been %s successfully.
+
+                Details:
+                - Reservation ID: %d
+                - Course ID: %d
+                - Student ID: %d
+                - Date: %s
+
+                Thank you for using our course system.
+                """,
+                status,
+                event.getReservationId(),
+                event.getCourseId(),
+                event.getStudentId(),
+                event.getEventTime()
+        );
+    }
+}

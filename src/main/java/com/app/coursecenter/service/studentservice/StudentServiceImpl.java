@@ -49,11 +49,13 @@ public class StudentServiceImpl implements StudentService {
 
     private String getCurrentUserEmail() {
         try {
-            return studentRepository.findById(findAuthenticatedStudent.getAuthenticatedStudent().getId()).get().getEmail();
+            return findAuthenticatedStudent.getAuthenticatedStudent().getUsername();
         } catch (AccessDeniedException e) {
             throw new RuntimeException(e);
         }
     }
+
+
 
     public void cancelCourseReservation(Long reservationId) {
         //producer.sendCancelReservationCommand(reservationId);

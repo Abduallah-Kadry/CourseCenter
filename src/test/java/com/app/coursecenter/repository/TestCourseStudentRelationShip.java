@@ -3,14 +3,8 @@ package com.app.coursecenter.repository;
 
 import com.app.coursecenter.entity.Course;
 import com.app.coursecenter.entity.Student;
-import io.jsonwebtoken.lang.Assert;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-
-import java.util.Collections;
-import java.util.Optional;
-import java.util.Set;
 
 import static org.hibernate.validator.internal.util.Contracts.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -46,7 +40,5 @@ public class TestCourseStudentRelationShip {
         student.setPassword("password123");
         return student;
     }
-
-
 
 }
