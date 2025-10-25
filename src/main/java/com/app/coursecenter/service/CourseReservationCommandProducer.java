@@ -27,10 +27,10 @@ public class CourseReservationCommandProducer {
         System.out.println("📤 Sent event: " + event);
     }
 
-    public void sendCancelReservationCommand(Long reservationId, Long studentId, String studentEmail, Long courseId) {
+    public void sendCancelReservationCommand(Long studentId, String studentEmail, Long courseId) {
         CourseReservationEvent event = null;
         event = new CourseReservationEvent(
-                "ReservationCancelledEvent", studentId, courseId, reservationId, studentEmail
+                "ReservationCancelledEvent", studentId, courseId, null, studentEmail
         );
         kafkaTemplate.send(topicName, event);
         System.out.println("📤 Sent event: " + event);

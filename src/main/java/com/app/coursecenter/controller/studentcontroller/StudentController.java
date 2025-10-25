@@ -27,9 +27,10 @@ public class StudentController {
         return ResponseEntity.accepted().body("Reservation command sent");
     }
 
-    @DeleteMapping("/{reservationId}")
-    public ResponseEntity<?> cancelReservation(@PathVariable Long reservationId) {
-        studentService.cancelCourseReservation(reservationId);
+
+    @DeleteMapping("/cancel")
+    public ResponseEntity<?> cancelReservation(@RequestParam Long courseId) {
+        studentService.cancelCourseReservation(courseId);
         return ResponseEntity.accepted().body("Cancel command sent");
     }
 

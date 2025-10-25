@@ -11,6 +11,8 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Service
 public class CourseReservationConsumer {
 
@@ -59,10 +61,19 @@ public class CourseReservationConsumer {
     }
 
     private void handleReservationCancelled(CourseReservationEvent event) {
-        reservationRepository.findById(event.getReservationId())
+        reservationRepository.findByStudentIdAndCourseId(event.getStudentId(), event.getCourseId())
                 .ifPresentOrElse(reservation -> {
+                    // Check if the reservation is older than 30 days
+                    if (reservation.getReservationTime().isBefore(LocalDateTime.now().minusDays(30))) {
+                        throw new IllegalStateException("❌ Cannot cancel reservation after 30 days.");
+                    }
+
                     reservationRepository.delete(reservation);
-                    System.out.println("🗑️ Reservation cancelled: " + event.getReservationId());
-                }, () -> System.out.println("⚠️ Reservation not found: " + event.getReservationId()));
+                    System.out.println("🗑️ Reservation cancelled successfully for Student ID: "
+                            + event.getStudentId() + ", Course ID: " + event.getCourseId());
+                }, () -> System.out.println("⚠️ Reservation not found for Student ID: "
+                        + event.getStudentId() + ", Course ID: " + event.getCourseId()));
     }
+
+
 }

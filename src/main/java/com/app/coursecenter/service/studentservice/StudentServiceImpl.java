@@ -49,16 +49,15 @@ public class StudentServiceImpl implements StudentService {
 
     private String getCurrentUserEmail() {
         try {
-            return findAuthenticatedStudent.getAuthenticatedStudent().getUsername();
+            return findAuthenticatedStudent.getAuthenticatedStudent().getEmail();
         } catch (AccessDeniedException e) {
             throw new RuntimeException(e);
         }
     }
 
 
-
-    public void cancelCourseReservation(Long reservationId) {
-        //producer.sendCancelReservationCommand(reservationId);
+    public void cancelCourseReservation(Long courseId) {
+        producer.sendCancelReservationCommand(getCurrentUserId(),getCurrentUserEmail() ,courseId);
     }
 
     // prevent access if the user is using postman for example without using an actual student profile
