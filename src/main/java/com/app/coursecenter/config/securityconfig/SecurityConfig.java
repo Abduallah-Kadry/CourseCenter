@@ -1,6 +1,7 @@
 package com.app.coursecenter.config.securityconfig;
 
 
+import com.app.coursecenter.config.ApiPathConfig;
 import com.app.coursecenter.repository.StudentRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,10 +26,12 @@ public class SecurityConfig {
 
     private final StudentRepository studentRepository;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final ApiPathConfig pathConfig;
 
-    public SecurityConfig(StudentRepository studentRepository, JwtAuthenticationFilter jwtAuthenticationFilter) {
+    public SecurityConfig(StudentRepository studentRepository, JwtAuthenticationFilter jwtAuthenticationFilter, ApiPathConfig pathConfig) {
         this.studentRepository = studentRepository;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.pathConfig = pathConfig;
     }
 
     @Bean
@@ -57,7 +60,6 @@ public class SecurityConfig {
             response.getWriter().write("{\"error\": \"Unauthorized access\"}");
         };
     }
-
 
 
     @Bean

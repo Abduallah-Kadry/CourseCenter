@@ -6,8 +6,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Controller
-@RequestMapping("/frontend")
+@RequestMapping("${app.paths.frontend-base}")
 public class ViewController {
+
+    // todo structure a way to go the home and login page
 
     @GetMapping("")
     public String home() {
@@ -20,4 +22,9 @@ public class ViewController {
     }
 
     // Add more view mappings as needed
+
+     @GetMapping("/courses")
+    public String courses() {
+        return "courses";
+    }
 }

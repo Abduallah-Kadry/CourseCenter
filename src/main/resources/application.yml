@@ -1,98 +1,126 @@
 server:
-    port: 8080
+  port: 8080
 
 spring:
-    datasource:
-        # ✅ Use localhost:3307 since Spring Boot runs locally
-        url: jdbc:mysql://localhost:3307/coursecenterdb?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
-        username: courseuser
-        password: coursepass
-        driver-class-name: com.mysql.cj.jdbc.Driver
+  datasource:
+    # ✅ Use localhost:3307 since Spring Boot runs locally
+    url: jdbc:mysql://localhost:3307/coursecenterdb?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
+    username: courseuser
+    password: coursepass
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
-    jpa:
-        hibernate:
-            ddl-auto: update
-        show-sql: true
-        properties:
-            hibernate:
-                dialect: org.hibernate.dialect.MySQL8Dialect
-                format_sql: true
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
 
-    kafka:
-        # ✅ Use localhost:29092 for Kafka (already correct)
-        bootstrap-servers: localhost:29092
+  kafka:
+    # ✅ Use localhost:29092 for Kafka (already correct)
+    bootstrap-servers: localhost:29092
 
-        # Producer Configuration - JSON
-        producer:
-            key-serializer: org.apache.kafka.common.serialization.StringSerializer
-            value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-            acks: all
-            retries: 3
-            properties:
-                # Idempotence for exactly-once semantics
-                enable.idempotence: true
-                max.in.flight.requests.per.connection: 5
-                # Compression
-                compression.type: snappy
-                # Batch settings
-                batch.size: 16384
-                linger.ms: 10
-                buffer.memory: 33554432
+    # Producer Configuration - JSON
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      retries: 3
+      properties:
+        # Idempotence for exactly-once semantics
+        enable.idempotence: true
+        max.in.flight.requests.per.connection: 5
+        # Compression
+        compression.type: snappy
+        # Batch settings
+        batch.size: 16384
+        linger.ms: 10
+        buffer.memory: 33554432
 
-        # Consumer Configuration - JSON
-        consumer:
-            group-id: reservation-service-group
-            auto-offset-reset: earliest
-            key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-            value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-            enable-auto-commit: false
-            properties:
-                # Trust your own packages for deserialization
-                spring.json.trusted.packages: "com.app.coursecenter.dto"
-                # Consumer performance tuning
-                max.poll.records: 500
-                fetch.min.bytes: 1024
-                fetch.max.wait.ms: 500
-                session.timeout.ms: 30000
-                heartbeat.interval.ms: 10000
+    # Consumer Configuration - JSON
+    consumer:
+      group-id: reservation-service-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      enable-auto-commit: false
+      properties:
+        # Trust your own packages for deserialization
+        spring.json.trusted.packages: "com.app.coursecenter.dto"
+        # Consumer performance tuning
+        max.poll.records: 500
+        fetch.min.bytes: 1024
+        fetch.max.wait.ms: 500
+        session.timeout.ms: 30000
+        heartbeat.interval.ms: 10000
 
-        # Listener Configuration
-        listener:
-            ack-mode: manual
-            concurrency: 3
-            type: batch
+    # Listener Configuration
+    listener:
+      ack-mode: manual
+      concurrency: 3
+      type: batch
 
 # JWT Configuration
 jwt:
-    secret: ${JWT_SECRET:370fc2ad32927ff329d2807b020a92cbde3d349b44c19304d3c8e8b107365042}
-    expiration: 900000  # 15 minutes
+  secret: ${JWT_SECRET:370fc2ad32927ff329d2807b020a92cbde3d349b44c19304d3c8e8b107365042}
+  expiration: 900000  # 15 minutes
 
 # Course Reservation Configuration
 course-reservation:
-    topic:
-        name: course-reservation-events
-        partitions: 3
-        replication-factor: 1
+  topic:
+    name: course-reservation-events
+    partitions: 3
+    replication-factor: 1
 
 # Logging Configuration
 logging:
-    level:
-        com.app.coursecenter: DEBUG
-        org.springframework.kafka: INFO
-        org.apache.kafka: WARN
-    pattern:
-        console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  level:
+    com.app.coursecenter: DEBUG
+    org.springframework.kafka: INFO
+    org.apache.kafka: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
 
 # Actuator endpoints for monitoring
 management:
-    endpoints:
-        web:
-            exposure:
-                include: health,info,metrics,prometheus
-    endpoint:
-        health:
-            show-details: always
-    prometheus:
-        metrics:
-            export:
-                enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
+
+
+# custom api
+
+app:
+  paths:
+    api-base: /api
+    frontend-base: /frontend
+    auth-base: /auth
+    admin-base: /admin
+    student-base: /student
+    teacher-base: /teacher
+    public-paths:
+      - /
+      - /login
+      - /register
+      - /index
+      - /swagger-ui/**
+      - /v3/api-docs/**
+      - /swagger-resources/**
+      - /webjars/**
+      - /docs
+      - /error
+    auth-endpoints:
+      - /register
+      - /login
+      - /refresh-token

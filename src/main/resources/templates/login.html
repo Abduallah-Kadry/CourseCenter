@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{fragments/layout}">
+      layout:decorate="~{fragments/layout}" lang="en">
 <head>
     <title>Login - Course Center</title>
 </head>
@@ -22,7 +22,7 @@
                             You have been logged out successfully.
                         </div>
 
-                        <form th:action="@{/login}" method="post">
+                        <form th:action="@{/api/auth/login}" method="post">
                             <div class="mb-3">
                                 <label for="username" class="form-label">Email address</label>
                                 <input type="email" class="form-control" id="username" name="username" required>
