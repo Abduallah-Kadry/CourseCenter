@@ -3,8 +3,8 @@ server:
 
 spring:
     datasource:
-        # ✅ Use the Docker service name (not localhost)
-        url: jdbc:mysql://mysql:3306/coursecenterdb?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
+        # ✅ Use localhost:3307 since Spring Boot runs locally
+        url: jdbc:mysql://localhost:3307/coursecenterdb?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
         username: courseuser
         password: coursepass
         driver-class-name: com.mysql.cj.jdbc.Driver
@@ -19,13 +19,8 @@ spring:
                 format_sql: true
 
     kafka:
-        kafka:
-            bootstrap-servers: localhost:29092
-            datasource:
-                url: jdbc:mysql://localhost:3307/coursecenterdb
-                username: courseuser
-                password: coursepass
-                driver-class-name: com.mysql.cj.jdbc.Driver
+        # ✅ Use localhost:29092 for Kafka (already correct)
+        bootstrap-servers: localhost:29092
 
         # Producer Configuration - JSON
         producer:

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Course Center - Home</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <!-- Hero Section -->
+        <div class="bg-primary text-white py-5">
+            <div class="container text-center">
+                <h1 class="display-4">Welcome to Course Center</h1>
+                <p class="lead">Your gateway to knowledge and professional growth</p>
+                <a href="/courses" class="btn btn-light btn-lg mt-3">Browse Courses</a>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="container my-5">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-laptop-code fa-3x text-primary mb-3"></i>
+                            <h3>Learn Anytime</h3>
+                            <p>Access courses anytime, anywhere at your own pace. Learn when it's convenient for you.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-chalkboard-teacher fa-3x text-primary mb-3"></i>
+                            <h3>Expert Instructors</h3>
+                            <p>Learn from industry experts with years of experience in their respective fields.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-certificate fa-3x text-primary mb-3"></i>
+                            <h3>Certification</h3>
+                            <p>Earn certificates upon course completion to showcase your new skills.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="bg-light py-5">
+            <div class="container text-center">
+                <h2>Ready to get started?</h2>
+                <p class="lead">Join thousands of students learning with us today.</p>
+                <a href="/register" class="btn btn-primary btn-lg">Create Free Account</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

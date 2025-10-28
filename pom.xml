@@ -125,6 +125,11 @@
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
         </dependency>
+        <!--        thymeleaf  -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
 
     </dependencies>
 
@@ -181,7 +186,7 @@
             </plugin>
             <plugin>
 
-            <!-- build the image without having to use docker file (select only the important deps to run the project -->
+                <!-- build the image without having to use docker file (select only the important deps to run the project -->
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
                 <version>3.4.2</version>

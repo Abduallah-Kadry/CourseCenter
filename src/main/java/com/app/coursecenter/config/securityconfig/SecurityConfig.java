@@ -64,7 +64,8 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(configurer ->
                 configurer
-                        .requestMatchers("/api/auth/register", "/api/auth/login","/swagger-ui/**", "/v3/api-docs/**",
+                        .requestMatchers("/", "/index", "/frontend/**", "/frontend/login", "/frontend/index",
+                                "/api/auth/register", "/api/auth/login", "/swagger-ui/**", "/v3/api-docs/**",
                                 "/swagger-resources/**", "/webjars/**", "/docs").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         // here make the student only able to review his courses (think of how to let the student view his course (i think you should reuse the info mechanism)

@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   # 🦓 Zookeeper
   zookeeper:
@@ -94,36 +96,40 @@ services:
       - mysql-data:/var/lib/mysql
     networks:
       - course-center-network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # 🚀 Your Spring Boot Application (prebuilt image)
-  coursecenter-app:
-    image: coursecenter-app          # your prebuilt image name
-    container_name: coursecenter-app
-    depends_on:
-      mysql:
-        condition: service_healthy
-      kafka:
-        condition: service_started
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/coursecenterdb
-      SPRING_DATASOURCE_USERNAME: courseuser
-      SPRING_DATASOURCE_PASSWORD: coursepass
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-      SPRING_PROFILES_ACTIVE: docker
-    ports:
-      - "8080:8080"
-    networks:
-      - course-center-network
-    restart: always
+  # 🚫 Commented out to run Spring Boot app locally
+  # coursecenter-app:
+  #   image: coursecenter-app          # your prebuilt image name
+  #   container_name: coursecenter-app
+  #   depends_on:
+  #     mysql:
+  #       condition: service_healthy
+  #     kafka:
+  #       condition: service_started
+  #   environment:
+  #     SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/coursecenterdb
+  #     SPRING_DATASOURCE_USERNAME: courseuser
+  #     SPRING_DATASOURCE_PASSWORD: coursepass
+  #     SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+  #     SPRING_PROFILES_ACTIVE: docker
+  #   ports:
+  #     - "8080:8080"
+  #   networks:
+  #     - course-center-network
+  #   restart: always
 
 networks:
   course-center-network:
     driver: bridge
+    name: course-center-network
+    attachable: true
 
 volumes:
   mysql-data:

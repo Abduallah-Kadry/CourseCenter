@@ -2,8 +2,10 @@ package com.app.coursecenter.controller.coursecontroller;
 
 import com.app.coursecenter.entity.Course;
 import com.app.coursecenter.request.CreateCourseRequest;
+import com.app.coursecenter.response.ApiRespond;
 import com.app.coursecenter.service.courseservice.CourseService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,8 +18,6 @@ import java.util.Set;
 // the student should gets it's enrolled courses
 // the stuednt should request to be added to the course
 // the student should not register in more than 3 courses
-
-
 public class CourseController {
 
     private final CourseService courseService;
@@ -34,10 +34,9 @@ public class CourseController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<Course>> getAllCourses() {
+    public ResponseEntity<ApiRespond> getAllCourses() {
         try {
-            //
-            return ResponseEntity.ok(courseService.getAllCourses());
+            return ResponseEntity.ok(new ApiRespond(HttpStatus.OK, "All Courses", courseService.getAllCourses()));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
