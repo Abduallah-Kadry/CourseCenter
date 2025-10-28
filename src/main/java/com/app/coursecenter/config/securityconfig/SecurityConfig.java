@@ -2,6 +2,7 @@ package com.app.coursecenter.config.securityconfig;
 
 
 import com.app.coursecenter.repository.StudentRepository;
+import com.app.coursecenter.entity.StudentDetails;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -32,11 +33,11 @@ public class SecurityConfig {
     }
 
     @Bean
-    UserDetailsService userDetailsService() {
+    public UserDetailsService userDetailsService() {
         return username -> studentRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .map(StudentDetails::new) // Wrap Student into StudentDetails
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + username));
     }
-
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -57,8 +58,6 @@ public class SecurityConfig {
             response.getWriter().write("{\"error\": \"Unauthorized access\"}");
         };
     }
-
-
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -84,5 +83,4 @@ public class SecurityConfig {
 
         return http.build();
     }
-
 }

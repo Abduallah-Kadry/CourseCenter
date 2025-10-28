@@ -2,6 +2,7 @@ package com.app.coursecenter.service.authenticationservice;
 
 import com.app.coursecenter.entity.Authority;
 import com.app.coursecenter.entity.Student;
+import com.app.coursecenter.entity.StudentDetails;
 import com.app.coursecenter.exception.InvalidCredentialException;
 import com.app.coursecenter.repository.StudentRepository;
 import com.app.coursecenter.request.AuthenticationRequest;
@@ -48,18 +49,21 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public AuthenticationResponse login(AuthenticationRequest request) {
         try {
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+            );
 
             Student student = studentRepository.findByEmail(request.getEmail())
                     .orElseThrow(() -> new InvalidCredentialException("Invalid email or password"));
 
-            String jwtToken = jwtService.generateToken(new HashMap<>(), student);
+            // ✅ Wrap Student in StudentDetails
+            StudentDetails studentDetails = new StudentDetails(student);
+
+            String jwtToken = jwtService.generateToken(new HashMap<>(), studentDetails);
             return new AuthenticationResponse(jwtToken);
 
         } catch (Exception e) {
             throw new InvalidCredentialException("Invalid email or password");
         }
-
     }
 
     private boolean isEmailTaken(String email) {
