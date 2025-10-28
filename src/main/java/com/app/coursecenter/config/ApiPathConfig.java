@@ -17,22 +17,31 @@ public class ApiPathConfig {
 
     // Base paths
     private String apiBase = "/api";
-    private String frontendBase = "/frontend";
+    private String frontendBase = "/page";
 
     // Public endpoints (no auth required)
     private String[] publicPaths = {
-            "/",
-            "/index",
+            "/", // welcome page
             "/swagger-ui/**",
-            "/login",
-            "/register",
-            "/forgot-password",
-            "/reset-password",
             "/v3/api-docs/**",
             "/swagger-resources/**",
             "/webjars/**",
-            "/docs"
+            "/docs",
+            "/error"
     };
+
+    // frontend end points
+    private String[] frontEndPublicPages = {
+            "/courses",
+            "/login",
+            "/register",
+            "/index",
+            "/forgot-password",
+            "/reset-password",
+
+    };
+    private String[] frontEndAuthPages = {"/profile", "/setting", "/dashboard"};
+
 
     // Auth endpoints
     private String authBase = "/auth";
@@ -52,6 +61,18 @@ public class ApiPathConfig {
                 .toArray(String[]::new); // this gets the full paths of endpoints
     }
 
+    public String[] getAuthFrontEndPaths() {
+        return Stream.of(frontEndAuthPages)
+                .map(endpoint -> frontendBase + endpoint)
+                .toArray(String[]::new);
+    }
+
+    public String[] getPublicFrontEndPaths() {
+        return Stream.of(frontEndPublicPages)
+                .map(endpoint -> frontendBase + endpoint)
+                .toArray(String[]::new);
+    }
+
     public String getAdminApiPath() {
         return apiBase + adminBase + "/**";
     }
@@ -67,6 +88,7 @@ public class ApiPathConfig {
     public String getFrontendPath() {
         return frontendBase + "/**";
     }
+
 
     public String[] getAllPublicPaths() {
         return Stream.concat(

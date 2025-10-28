@@ -100,27 +100,37 @@ management:
 
 
 # custom api
-
 app:
   paths:
     api-base: /api
-    frontend-base: /frontend
+    frontend-base: /page
     auth-base: /auth
     admin-base: /admin
     student-base: /student
     teacher-base: /teacher
+
     public-paths:
       - /
-      - /login
-      - /register
-      - /index
       - /swagger-ui/**
       - /v3/api-docs/**
       - /swagger-resources/**
       - /webjars/**
       - /docs
       - /error
+
+    front-end-public-pages:
+      - /courses
+      - /login
+      - /register
+      - /index
+      - /forgot-password
+      - /reset-password
+
+    front-end-auth-pages:
+      - /profile
+      - /setting
+      - /dashboard
+
     auth-endpoints:
       - /register
       - /login
-      - /refresh-token

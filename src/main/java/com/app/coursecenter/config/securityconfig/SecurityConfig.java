@@ -65,13 +65,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(configurer ->
-                configurer
-                        .requestMatchers("/", "/index", "/frontend/**", "/frontend/login", "/frontend/index",
-                                "/api/auth/register", "/api/auth/login", "/swagger-ui/**", "/v3/api-docs/**",
-                                "/swagger-resources/**", "/webjars/**", "/docs").permitAll()
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        // here make the student only able to review his courses (think of how to let the student view his course (i think you should reuse the info mechanism)
-                        .anyRequest().authenticated()
+
+                        configurer
+                                .requestMatchers(pathConfig.getAllPublicPaths()).permitAll()
+                                .requestMatchers(pathConfig.getPublicFrontEndPaths()).permitAll()
+                                .requestMatchers(pathConfig.getAuthFrontEndPaths()).authenticated()
+                                .requestMatchers(pathConfig.getAdminApiPath()).hasRole("ADMIN")
+                                .requestMatchers(pathConfig.getStudentApiPath()).hasRole("STUDENT")
+                                .requestMatchers(pathConfig.getTeacherApiPath()).hasRole("Teacher")
+                                .anyRequest().authenticated()
         );
 
         http.csrf(AbstractHttpConfigurer::disable);

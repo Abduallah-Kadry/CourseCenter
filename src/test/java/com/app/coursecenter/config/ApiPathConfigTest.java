@@ -20,4 +20,10 @@ class ApiPathConfigTest {
     void getAllPublicPaths() {
         System.out.println(Arrays.toString(pathConfig.getAllPublicPaths()));
     }
+
+
+    @Test
+    void getAllFrontEndPublicPath() {
+        System.out.println(Arrays.toString(pathConfig.getPublicFrontEndPaths()));
+    }
 }
