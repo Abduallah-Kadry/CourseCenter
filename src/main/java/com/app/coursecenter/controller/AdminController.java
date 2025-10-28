@@ -1,11 +1,14 @@
 package com.app.coursecenter.controller;
 
+import com.app.coursecenter.dto.CourseDto;
 import com.app.coursecenter.dto.StudentDto;
 import com.app.coursecenter.service.adminservice.AdminService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Min;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,11 +24,18 @@ public class AdminController {
         this.adminService = adminService;
     }
 
-    @Operation(summary = "Get all students", description = "Retrieve a list of all students in the system")
+    @Operation(summary = "Get all students on pages default page size 5", description = "Retrieve a list of all students in the system")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public List<StudentDto> getAllStudents() {
-        return adminService.getAllStudents();
+    public ResponseEntity<Page<StudentDto>> getAllCourses(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        try {
+            Page<StudentDto> students = adminService.getAllStudents(page, size);
+            return ResponseEntity.ok(students);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @Operation(summary = "Promote user to admin", description = "Promote user to admin role")

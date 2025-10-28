@@ -10,7 +10,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 // TODO see if using another wrapper class named MyStudentDetails that implements UserDetails to decouple it from security configs
 

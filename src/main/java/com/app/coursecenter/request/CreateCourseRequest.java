@@ -7,6 +7,7 @@ import lombok.Data;
 
 @Data
 public class CreateCourseRequest {
+
     @NotEmpty(message = "Course name is mandatory")
     @Size(min = 3, max = 30, message = "First name must be at least 3 characters long")
     private String name;

@@ -1,24 +1,23 @@
 package com.app.coursecenter.dto;
 
+import jakarta.persistence.Version;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
-// 1. case to use the dto is to use it to send data to the front
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class StudentDto {
+public class CourseDto {
 
-    private long id;
+    private Long id;
 
-    private String firstName;
+    private String name;
 
-    private String lastName;
+    private String description;
 
-    private String email;
+    private int creditHours;
 
+    @Version
     private int version;
 }

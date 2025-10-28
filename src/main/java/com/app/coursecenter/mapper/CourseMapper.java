@@ -1,6 +1,7 @@
 package com.app.coursecenter.mapper;
 
 
+import com.app.coursecenter.dto.CourseDto;
 import com.app.coursecenter.entity.Course;
 import com.app.coursecenter.request.CreateCourseRequest;
 import org.mapstruct.Mapper;
@@ -11,4 +12,7 @@ public interface CourseMapper {
 
     Course courseRequestToCourse(CreateCourseRequest courseRequest);
 
+    CourseDto courseToCourseDto(Course course);
+
+    Course courseDtoToCourse(CourseDto courseDto);
 }

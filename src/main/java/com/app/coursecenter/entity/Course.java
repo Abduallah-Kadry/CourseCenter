@@ -8,10 +8,17 @@ import lombok.EqualsAndHashCode;
 @Entity
 @Data
 public class Course extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
+
     private String description;
+
     private int creditHours;
+
+    @Version
+    private int version;
 }

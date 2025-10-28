@@ -55,7 +55,6 @@ public class StudentServiceImpl implements StudentService {
         }
     }
 
-
     public void cancelCourseReservation(Long courseId) {
         producer.sendCancelReservationCommand(getCurrentUserId(),getCurrentUserEmail() ,courseId);
     }

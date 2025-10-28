@@ -1,9 +1,11 @@
 package com.app.coursecenter.controller.coursecontroller;
 
+import com.app.coursecenter.dto.CourseDto;
 import com.app.coursecenter.entity.Course;
 import com.app.coursecenter.request.CreateCourseRequest;
 import com.app.coursecenter.service.courseservice.CourseService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,22 +35,25 @@ public class CourseController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<Course>> getAllCourses() {
+    public ResponseEntity<Page<CourseDto>> getAllCourses(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
         try {
-            //
-            return ResponseEntity.ok(courseService.getAllCourses());
+            Page<CourseDto> courses = courseService.getAllCourses(page, size);
+            return ResponseEntity.ok(courses);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
     }
 
-//    @GetMapping("/{id}")
-//    public ResponseEntity<Set<Course>> getCoursesByStudentId(@PathVariable("id") Long studentId) {
-//        try {
-//            //
-//            return ResponseEntity.ok(courseService.getCoursesByStudentId(studentId));
-//        } catch (Exception e) {
-//            return ResponseEntity.internalServerError().build();
-//        }
-//    }
+    @GetMapping("/id")
+    public ResponseEntity<CourseDto> getCourseById(@RequestParam("id") long id) {
+        try {
+            //
+            return ResponseEntity.ok(courseService.getCourseById(id));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
 }
