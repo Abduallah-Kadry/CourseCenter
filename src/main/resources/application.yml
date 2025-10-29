@@ -2,6 +2,11 @@ server:
   port: 8080
 
 spring:
+  devtools:
+    restart:
+      poll-interval: 10s
+      quiet-period: 10s
+
   datasource:
     # ✅ Use localhost:3307 since Spring Boot runs locally
     url: jdbc:mysql://localhost:3307/coursecenterdb?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
@@ -105,6 +110,7 @@ app:
     api-base: /api
     frontend-base: /page
     auth-base: /auth
+
     admin-base: /admin
     student-base: /student
     teacher-base: /teacher

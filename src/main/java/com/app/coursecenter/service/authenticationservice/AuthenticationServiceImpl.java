@@ -48,7 +48,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-
             Student student = studentRepository.findByEmail(request.getEmail())
                     .orElseThrow(() -> new InvalidCredentialException("Invalid email or password"));
 

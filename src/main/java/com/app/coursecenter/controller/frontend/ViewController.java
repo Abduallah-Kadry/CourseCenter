@@ -21,9 +21,14 @@ public class ViewController {
         return "login";
     }
 
+    @GetMapping("/register")
+    public String register() {
+        return "register";
+    }
+
     // Add more view mappings as needed
 
-     @GetMapping("/courses")
+    @GetMapping("/courses")
     public String courses() {
         return "courses";
     }

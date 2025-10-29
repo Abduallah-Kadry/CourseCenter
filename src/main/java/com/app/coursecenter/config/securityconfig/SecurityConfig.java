@@ -61,20 +61,26 @@ public class SecurityConfig {
         };
     }
 
+    /* todo
+     1. make sure that the login return a token that the browser uses until it expire or being destroyed by the logout
+     2. make sure that the specific roles are the ones who runs the right apis
+     3. make sure that calling apis return the right data
+
+     */
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(configurer ->
 
-                        configurer
-                                .requestMatchers(pathConfig.getAllPublicPaths()).permitAll()
-                                .requestMatchers(pathConfig.getPublicFrontEndPaths()).permitAll()
-                                .requestMatchers(pathConfig.getAuthFrontEndPaths()).authenticated()
-                                .requestMatchers(pathConfig.getAdminApiPath()).hasRole("ADMIN")
-                                .requestMatchers(pathConfig.getStudentApiPath()).hasRole("STUDENT")
-                                .requestMatchers(pathConfig.getTeacherApiPath()).hasRole("Teacher")
-                                .anyRequest().authenticated()
-        );
+                configurer
+                        .requestMatchers(pathConfig.getAllPublicPaths()).permitAll()
+                        .requestMatchers(pathConfig.getPublicFrontEndPaths()).permitAll()
+                        .requestMatchers(pathConfig.getAuthFrontEndPaths()).authenticated()
+                        .requestMatchers(pathConfig.getAdminApiPath()).hasRole("ADMIN")
+                        .requestMatchers(pathConfig.getStudentApiPath()).hasRole("STUDENT")
+                        .requestMatchers(pathConfig.getTeacherApiPath()).hasRole("Teacher")
+                        .anyRequest().authenticated());
 
         http.csrf(AbstractHttpConfigurer::disable);
 

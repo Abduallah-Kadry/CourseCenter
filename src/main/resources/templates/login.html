@@ -6,43 +6,73 @@
     <title>Login - Course Center</title>
 </head>
 <body>
-    <div layout:fragment="content">
-        <div class="row justify-content-center">
-            <div class="col-md-6 col-lg-4">
-                <div class="card shadow">
-                    <div class="card-body">
-                        <h2 class="card-title text-center mb-4">Login</h2>
-                        <!-- Display error message if authentication fails -->
-                        <div th:if="${param.error}" class="alert alert-danger" role="alert">
-                            Invalid username or password.
-                        </div>
+<div layout:fragment="content">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">Login</h2>
+                    <!-- Display error message if authentication fails -->
+                    <div th:if="${param.error}" class="alert alert-danger" role="alert">
+                        Invalid username or password.
+                    </div>
 
-                        <!-- Display message if user logs out -->
-                        <div th:if="${param.logout}" class="alert alert-success" role="alert">
-                            You have been logged out successfully.
-                        </div>
+                    <!-- Display message if user logs out -->
+                    <div th:if="${param.logout}" class="alert alert-success" role="alert">
+                        You have been logged out successfully.
+                    </div>
 
-                        <form th:action="@{/api/auth/login}" method="post">
-                            <div class="mb-3">
-                                <label for="username" class="form-label">Email address</label>
-                                <input type="email" class="form-control" id="username" name="username" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="password" class="form-label">Password</label>
-                                <input type="password" class="form-control" id="password" name="password" required>
-                            </div>
-                            <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-primary">Sign in</button>
-                            </div>
-                        </form>
-
-                        <div class="mt-3 text-center">
-                            <a href="#" class="text-decoration-none">Forgot password?</a>
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email address</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
                         </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Sign in</button>
+                        </div>
+                    </form>
+
+                    <div class="mt-3 text-center">
+                        <a href="#" class="text-decoration-none">Forgot password?</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
+<script th:inline="javascript">
+  const API_BASE = [[${@environment.getProperty('app.paths.api-base')}]];
+  const AUTH_BASE = [[${@environment.getProperty('app.paths.auth-base')}]];
+  const FRONTEND_BASE = [[${@environment.getProperty('app.paths.frontend-base')}]];
+
+
+  document.getElementById("loginForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    const respond = await fetch(`${API_BASE}${AUTH_BASE}/login`, {
+      method: "post",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({email, password}),
+      credentials: "include" // IMPORTANT: include cookies
+    })
+
+    console.log(JSON.stringify({email,password}))
+    console.log(respond)
+    if (respond.ok) {
+      window.location.href = FRONTEND_BASE + "/dashboard";
+    } else {
+      alert("invalid username or password")
+    }
+
+  });
+
+
+</script>
 </body>
 </html>
