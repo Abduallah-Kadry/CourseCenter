@@ -39,7 +39,6 @@ public class AuthenticationController {
 
         AuthenticationResponse token = authenticationService.login(authenticationRequest);
 
-
         ResponseCookie cookie = ResponseCookie.from("jwt", token.getToken())
                 .httpOnly(true)
                 .secure(false) // change to true if using HTTPS
@@ -59,7 +58,6 @@ public class AuthenticationController {
     @Operation(summary = "Logout", description = "Logout user")
     @PostMapping("/logout")
     public ResponseEntity<Void> login(HttpServletResponse response) {
-
 
         ResponseCookie cookie = ResponseCookie.from("jwt", "")
                 .httpOnly(true)

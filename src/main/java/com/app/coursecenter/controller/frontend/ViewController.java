@@ -1,6 +1,9 @@
 package com.app.coursecenter.controller.frontend;
 
+import com.app.coursecenter.service.courseservice.CourseService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -8,6 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 @Controller
 @RequestMapping("${app.paths.frontend-base}")
 public class ViewController {
+
+    @Autowired
+    CourseService courseService;
 
     // todo structure a way to go the home and login page
 
@@ -29,7 +35,8 @@ public class ViewController {
     // Add more view mappings as needed
 
     @GetMapping("/courses")
-    public String courses() {
+    public String courses(Model model) {
+        model.addAttribute("courses",courseService.getAllCourses());
         return "courses";
     }
 }

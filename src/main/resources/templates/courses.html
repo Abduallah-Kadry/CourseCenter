@@ -3,38 +3,33 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
-    <title>Course Center - Home</title>
+    <meta charset="UTF-8">
+    <title>Courses</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .hero-section {
-            background: linear-gradient(135deg, #6e8efb, #a777e3);
-            color: white;
-            padding: 5rem 0;
-            margin-bottom: 3rem;
-            border-radius: 0.5rem;
+        .course-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            cursor: pointer;
         }
 
-        .feature-card {
-            border: none;
-            border-radius: 0.5rem;
-            transition: transform 0.3s, box-shadow 0.3s;
-            height: 100%;
-        }
-
-        .feature-card:hover {
+        .course-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
         }
 
-        .feature-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            color: #6c63ff;
+        .course-image {
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .star {
+            color: #f1c40f;
         }
     </style>
 </head>
-<body>
+<body class="bg-light">
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-light bg-light" sec>
     <div class="container-fluid">
         <!--        <a class="navbar-brand" th:href="@{/frontend/dashboard}">CourseCenter</a>-->
         <div class="d-flex">
@@ -43,169 +38,77 @@
     </div>
 </nav>
 
-<section layout:fragment="content">
-    <!-- Hero Section -->
-    <div class="hero-section text-center">
-        <div class="container">
-            <h1 class="display-4 fw-bold mb-4">Welcome to Course Center</h1>
-            <p class="lead mb-4">Enhance your skills with our wide range of professional courses</p>
-            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                <a href="/courses" class="btn btn-light btn-lg px-4 me-sm-3">Browse Courses</a>
-                <a href="#features" class="btn btn-outline-light btn-lg px-4">Learn More</a>
-            </div>
-        </div>
-    </div>
+<div class="container py-5">
+    <h2 class="mb-4 text-center fw-bold">Available Courses</h2>
 
-    <!-- Features Section -->
-    <div class="container mb-5" id="features">
-        <h2 class="text-center mb-5">Why Choose Our Platform?</h2>
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="card feature-card p-4 h-100">
-                    <div class="text-center">
-                        <div class="feature-icon">
-                            <i class="bi bi-laptop"></i>
-                        </div>
-                        <h3>Expert Instructors</h3>
-                        <p>Learn from industry professionals with years of practical experience in their fields.</p>
+    <div class="row g-4">
+        <!-- Loop over courses -->
+
+        <div th:if="${courses.isEmpty()}"> There is no courses yet</div>
+        <div class="col-md-4 col-lg-3" th:each="course : ${courses}">
+            <div class="card course-card h-100">
+                <!--  todo add image field to the course-->
+                <img th:src="${course.imageUrl}" class="card-img-top course-image" th:alt="${course.name}">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title" th:text="${course.name}">Course Name</h5>
+                    <p class="text-muted mb-1" th:text="'By ' + ${course.teacherName}">By Teacher</p>
+
+
+                    <!-- Rating -->
+
+                    <!--  todo add cost field to the course-->
+
+                    <div class="mb-2">
+                        <span th:each="i : ${#numbers.sequence(1,5)}"
+
+                              th:classappend="${i <= course.rating} ? 'star' : ''">★</span>
                     </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card feature-card p-4 h-100">
-                    <div class="text-center">
-                        <div class="feature-icon">
-                            <i class="bi bi-journal-bookmark"></i>
-                        </div>
-                        <h3>Comprehensive Courses</h3>
-                        <p>Access a wide range of courses designed to help you achieve your learning goals.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card feature-card p-4 h-100">
-                    <div class="text-center">
-                        <div class="feature-icon">
-                            <i class="bi bi-people"></i>
-                        </div>
-                        <h3>Community Support</h3>
-                        <p>Join a community of learners and get support from peers and instructors.</p>
+
+                    <!-- Cost -->
+                    <!--  todo add cost field to the course-->
+
+                    <p class="fw-semibold text-primary mb-3" th:text="'$' + ${course.cost}">$100</p>
+
+                    <div class="mt-auto">
+                        <a th:href="@{'/courses/' + ${course.id}}" class="btn btn-outline-primary w-100">
+                            View Details
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
+        <!-- End loop -->
     </div>
+</div>
 
-    <!-- Popular Courses Preview -->
-    <div class="container mb-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>Popular Courses</h2>
-            <a href="/courses" class="btn btn-outline-primary">View All Courses</a>
-        </div>
-        <div class="row row-cols-1 row-cols-md-3 g-4" id="popularCourses">
-            <!-- Popular courses will be loaded here via JavaScript -->
-            <div class="col-12 text-center my-5">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                <p class="mt-2">Loading popular courses...</p>
-            </div>
-        </div>
-    </div>
 
-    <!-- Call to Action -->
-    <div class="bg-light p-5 rounded-3 text-center mb-5">
-        <h2>Ready to start learning?</h2>
-        <p class="lead mb-4">Join thousands of students already learning with us</p>
-        <a href="/courses" class="btn btn-primary btn-lg">Get Started Now</a>
-    </div>
-</section>
+<script>
 
-<th:block layout:fragment="script">
-    <script th:inline="javascript">
-      document.addEventListener('DOMContentLoaded', function () {
-        // Fetch and display popular courses
-        async function loadPopularCourses() {
-          try {
-            const response = await fetch('/api/courses?sort=popular&limit=3');
-            if (!response.ok) {
-              throw new Error('Failed to fetch popular courses');
-            }
 
-            const courses = await response.json();
-            const coursesContainer = document.getElementById('popularCourses');
+  const API_BASE = "[[${@environment.getProperty('app.paths.api-base')}]]";
+  const AUTH_BASE = "[[${@environment.getProperty('app.paths.auth-base')}]]";
+  const FRONTEND_BASE = "[[${@environment.getProperty('app.paths.frontend-base')}]]";
+  document.getElementById("logoutBtn").addEventListener("click", async () => {
 
-            if (courses.length === 0) {
-              coursesContainer.innerHTML = `
-                                <div class="col-12 text-center">
-                                    <p>No popular courses available at the moment.</p>
-                                </div>
-                            `;
-              return;
-            }
-
-            coursesContainer.innerHTML = courses.map(course => `
-                            <div class="col">
-                                <div class="card h-100">
-                                    <img src="${course.imageUrl || 'https://via.placeholder.com/300x200'}"
-                                         class="card-img-top"
-                                         alt="${course.name}">
-                                    <div class="card-body">
-                                        <h5 class="card-title">${course.name}</h5>
-                                        <p class="card-text text-muted">${course.instructor || 'Instructor not specified'}</p>
-                                        <p class="card-text">${course.shortDescription || (course.description ? course.description.substring(0, 100) + '...' : 'No description available.')}</p>
-                                    </div>
-                                    <div class="card-footer bg-transparent">
-                                        <a href="/courses/${course.id}" class="btn btn-primary w-100">View Course</a>
-                                    </div>
-                                </div>
-                            </div>
-                        `).join('');
-          } catch (error) {
-            console.error('Error loading popular courses:', error);
-            document.getElementById('popularCourses').innerHTML = `
-                            <div class="col-12 text-center text-danger">
-                                <p>Failed to load popular courses. Please try again later.</p>
-                            </div>
-                        `;
-          }
-        }
-
-        // Load popular courses when the page loads
-        loadPopularCourses();
+    if (confirm("Are you sure you want to log out?")) {
+      const response = await fetch(`${API_BASE}${AUTH_BASE}/logout`, {
+        method: "POST",
+        credentials: "include" // IMPORTANT: ensures cookies are sent
       });
 
-
-      const API_BASE = [[${@environment.getProperty('app.paths.api-base')}]];
-      const AUTH_BASE = [[${@environment.getProperty('app.paths.auth-base')}]];
-      const FRONTEND_BASE = [[${@environment.getProperty('app.paths.frontend-base')}]];
-
-      document.getElementById("logoutBtn").addEventListener("click", async () => {
-
-        if (confirm("Are you sure you want to log out?")) {
-          const response = await fetch(`${API_BASE}${AUTH_BASE}/logout`, {
-            method: "POST",
-            credentials: "include" // IMPORTANT: ensures cookies are sent
-          });
-
-          if (response.ok) {
-            // Redirect to login page after clearing cookie
-            window.location.href = FRONTEND_BASE + "/login";
-          } else {
-            alert("Logout failed. Try again.");
-          }
-        }
+      if (response.ok) {
+        // Redirect to login page after clearing cookie
+        window.location.href = FRONTEND_BASE + "/login";
+      } else {
+        alert("Logout failed. Try again.");
+      }
+    }
 
 
-      });
+  });
 
 
-    </script>
-</th:block>
-
-<form>
-
-</form>
-
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

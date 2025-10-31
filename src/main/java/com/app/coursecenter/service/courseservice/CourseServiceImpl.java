@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +30,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public Course addCourse(CreateCourseRequest course) {
-        return courseRepository.save(courseMapper.courseRequestToCourse(course));
+        return courseRepository.save(courseMapper.courseCreateRequestToCourse(course));
     }
 
     @Override

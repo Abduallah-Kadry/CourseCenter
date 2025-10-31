@@ -1,6 +1,8 @@
 package com.app.coursecenter.request;
 
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -16,6 +18,14 @@ public class CreateCourseRequest {
     private String description;
 
     @NotEmpty(message = "Credit Hours is mandatory")
-    @Size(min = 1, max = 30, message = "Credit Hours must be at least 1 hour")
-    private String creditHours;
+    @Min(value= 1, message = "Credit Hours must be at least 1 hour")
+    @Max(value= 1, message = "Credit Hours must be at most 4 hour")
+    private int creditHours;
+
+    private String imageUrl;
+
+    @NotEmpty(message = "Cost is mandatory")
+    @Min(value = 0,message = "Cost must equal or be more than zero")
+    private double cost;
+
 }

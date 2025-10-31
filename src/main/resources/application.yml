@@ -4,12 +4,12 @@ server:
 spring:
   devtools:
     restart:
-      poll-interval: 10s
+      poll-interval: 12s
       quiet-period: 10s
 
   datasource:
     # ✅ Use localhost:3307 since Spring Boot runs locally
-    url: jdbc:mysql://localhost:3307/coursecenterdb?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
+    url: jdbc:mysql://localhost:3307/coursecenterdb
     username: courseuser
     password: coursepass
     driver-class-name: com.mysql.cj.jdbc.Driver
