@@ -1,0 +1,85 @@
+server:
+    port: 8080
+
+spring:
+    datasource:
+        # ✅ Use the Docker service name (not localhost)
+        url: jdbc:mysql://localhost:3307/coursecenterdb
+        username: courseuser
+        password: coursepass
+        driver-class-name: com.mysql.cj.jdbc.Driver
+
+    jpa:
+        hibernate:
+            ddl-auto: update
+        show-sql: true
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.MySQL8Dialect
+                format_sql: true
+
+    kafka:
+        bootstrap-servers: localhost:29092
+
+        producer:
+            key-serializer: org.apache.kafka.common.serialization.StringSerializer
+            value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+            acks: all
+            retries: 3
+            properties:
+                enable.idempotence: true
+                max.in.flight.requests.per.connection: 5
+                compression.type: snappy
+                batch.size: 16384
+                linger.ms: 10
+                buffer.memory: 33554432
+
+        consumer:
+            group-id: reservation-service-group
+            auto-offset-reset: earliest
+            key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+            enable-auto-commit: false
+            properties:
+                spring.json.trusted.packages: "com.app.coursecenter.dto"
+                max.poll.records: 500
+                fetch.min.bytes: 1024
+                fetch.max.wait.ms: 500
+                session.timeout.ms: 30000
+                heartbeat.interval.ms: 10000
+
+        listener:
+            ack-mode: manual
+            concurrency: 3
+            type: batch
+
+jwt:
+    secret: ${JWT_SECRET:370fc2ad32927ff329d2807b020a92cbde3d349b44c19304d3c8e8b107365042}
+    expiration: 900000  # 15 minutes
+
+course-reservation:
+    topic:
+        name: course-reservation-events
+        partitions: 3
+        replication-factor: 1
+
+logging:
+    level:
+        com.app.coursecenter: DEBUG
+        org.springframework.kafka: INFO
+        org.apache.kafka: WARN
+    pattern:
+        console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+management:
+    endpoints:
+        web:
+            exposure:
+                include: health,info,metrics,prometheus
+    endpoint:
+        health:
+            show-details: always
+    prometheus:
+        metrics:
+            export:
+                enabled: true

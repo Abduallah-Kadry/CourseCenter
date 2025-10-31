@@ -88,13 +88,16 @@ services:
       SPRING_DATASOURCE_USERNAME: courseuser
       SPRING_DATASOURCE_PASSWORD: coursepass
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-      SPRING_PROFILES_ACTIVE: docker
+      SPRING_PROFILES_ACTIVE: prod
     ports:
       - "8080:8080"
     networks:
       - course-center-network
     restart: always
 
+
+
+# another spring boot app that runs the notification service
   notification-service:
     image: notification-service
     build:
@@ -115,3 +118,8 @@ networks:
 
 volumes:
   mysql-data:
+
+# remember when you want to copy the files of the spring boot app and run it from the container then you need to enter this line
+# ./mvnw compile jib:dockerBuild
+# cd notification-service && ./mvnw compile jib:dockerBuild && cd ..
+# docker compose --profile deploy up -d
