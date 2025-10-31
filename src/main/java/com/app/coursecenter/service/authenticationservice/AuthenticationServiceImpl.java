@@ -2,13 +2,11 @@ package com.app.coursecenter.service.authenticationservice;
 
 import com.app.coursecenter.entity.Authority;
 import com.app.coursecenter.entity.Student;
-import com.app.coursecenter.entity.StudentDetails;
 import com.app.coursecenter.exception.InvalidCredentialException;
 import com.app.coursecenter.repository.StudentRepository;
 import com.app.coursecenter.request.AuthenticationRequest;
 import com.app.coursecenter.request.RegisterRequest;
 import com.app.coursecenter.response.AuthenticationResponse;
-import io.jsonwebtoken.InvalidClaimException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,9 +34,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     @Transactional
-    public void register(RegisterRequest input) throws Exception {
+    public void register(RegisterRequest input) {
         if (isEmailTaken(input.getEmail())) {
-            throw new Exception("Email already taken");
+            throw new RuntimeException("Email already taken");
         }
         Student student = buildNewUser(input);
         studentRepository.save(student);
@@ -49,9 +47,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public AuthenticationResponse login(AuthenticationRequest request) {
         try {
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-            );
-
+                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
             Student student = studentRepository.findByEmail(request.getEmail())
                     .orElseThrow(() -> new InvalidCredentialException("Invalid email or password"));
 
@@ -64,7 +60,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         } catch (Exception e) {
             throw new InvalidCredentialException("Invalid email or password");
         }
+
     }
+
+
 
     private boolean isEmailTaken(String email) {
         return studentRepository.findByEmail(email).isPresent();

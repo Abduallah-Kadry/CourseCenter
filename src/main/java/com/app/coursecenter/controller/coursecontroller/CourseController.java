@@ -1,11 +1,9 @@
 package com.app.coursecenter.controller.coursecontroller;
 
-import com.app.coursecenter.dto.CourseDto;
 import com.app.coursecenter.entity.Course;
 import com.app.coursecenter.request.CreateCourseRequest;
 import com.app.coursecenter.service.courseservice.CourseService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,18 +17,20 @@ import java.util.Set;
 // the stuednt should request to be added to the course
 // the student should not register in more than 3 courses
 
+
 public class CourseController {
 
     private final CourseService courseService;
 
 
     @PostMapping("")
-    public ResponseEntity<Course> createCourse(@RequestBody CreateCourseRequest course) {
+    public ResponseEntity<ApiRespond> createCourse(@RequestBody CreateCourseRequest course) {
         try {
-            //
-            return ResponseEntity.ok(courseService.addCourse(course));
+            return ResponseEntity.ok(new ApiRespond(HttpStatus.OK,
+                    "course added successfully", courseService.addCourse(course)));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
+          return ResponseEntity.ok(new ApiRespond(HttpStatus.OK,
+                    "Problem occurred", e.getMessage()));
         }
     }
 
@@ -39,8 +39,18 @@ public class CourseController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         try {
-            Page<CourseDto> courses = courseService.getAllCourses(page, size);
-            return ResponseEntity.ok(courses);
+                Page<CourseDto> courses = courseService.getAllCourses(page, size);
+            return ResponseEntity.ok(new ApiRespond(HttpStatus.OK, "All Courses", courses));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiRespond> updateCourse(@PathVariable long id, @RequestBody UpdateCourseRequest course) {
+        try {
+            return ResponseEntity.ok(new ApiRespond(HttpStatus.OK,
+                    "course updated successfully", courseService.updateCourse(id, course)));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }

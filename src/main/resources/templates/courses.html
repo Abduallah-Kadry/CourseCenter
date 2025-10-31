@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <title>Courses</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .course-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            cursor: pointer;
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .course-image {
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .star {
+            color: #f1c40f;
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light" sec>
+    <div class="container-fluid">
+        <!--        <a class="navbar-brand" th:href="@{/frontend/dashboard}">CourseCenter</a>-->
+        <div class="d-flex">
+            <button id="logoutBtn" class="btn btn-outline-danger btn-sm">Logout</button>
+        </div>
+    </div>
+</nav>
+
+<div class="container py-5">
+    <h2 class="mb-4 text-center fw-bold">Available Courses</h2>
+
+    <div class="row g-4">
+        <!-- Loop over courses -->
+
+        <div th:if="${courses.isEmpty()}"> There is no courses yet</div>
+        <div class="col-md-4 col-lg-3" th:each="course : ${courses}">
+            <div class="card course-card h-100">
+                <!--  todo add image field to the course-->
+                <img th:src="${course.imageUrl}" class="card-img-top course-image" th:alt="${course.name}">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title" th:text="${course.name}">Course Name</h5>
+                    <p class="text-muted mb-1" th:text="'By ' + ${course.teacherName}">By Teacher</p>
+
+
+                    <!-- Rating -->
+
+                    <!--  todo add cost field to the course-->
+
+                    <div class="mb-2">
+                        <span th:each="i : ${#numbers.sequence(1,5)}"
+
+                              th:classappend="${i <= course.rating} ? 'star' : ''">★</span>
+                    </div>
+
+                    <!-- Cost -->
+                    <!--  todo add cost field to the course-->
+
+                    <p class="fw-semibold text-primary mb-3" th:text="'$' + ${course.cost}">$100</p>
+
+                    <div class="mt-auto">
+                        <a th:href="@{'/courses/' + ${course.id}}" class="btn btn-outline-primary w-100">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End loop -->
+    </div>
+</div>
+
+
+<script>
+
+
+  const API_BASE = "[[${@environment.getProperty('app.paths.api-base')}]]";
+  const AUTH_BASE = "[[${@environment.getProperty('app.paths.auth-base')}]]";
+  const FRONTEND_BASE = "[[${@environment.getProperty('app.paths.frontend-base')}]]";
+  document.getElementById("logoutBtn").addEventListener("click", async () => {
+
+    if (confirm("Are you sure you want to log out?")) {
+      const response = await fetch(`${API_BASE}${AUTH_BASE}/logout`, {
+        method: "POST",
+        credentials: "include" // IMPORTANT: ensures cookies are sent
+      });
+
+      if (response.ok) {
+        // Redirect to login page after clearing cookie
+        window.location.href = FRONTEND_BASE + "/login";
+      } else {
+        alert("Logout failed. Try again.");
+      }
+    }
+
+
+  });
+
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

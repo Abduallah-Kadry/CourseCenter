@@ -1,16 +1,16 @@
 package com.app.coursecenter.service.courseservice;
 
-import com.app.coursecenter.dto.CourseDto;
 import com.app.coursecenter.entity.Course;
+import com.app.coursecenter.exception.ResourceNotFoundException;
 import com.app.coursecenter.mapper.CourseMapper;
 import com.app.coursecenter.repository.CourseRepository;
 import com.app.coursecenter.request.CreateCourseRequest;
+import com.app.coursecenter.request.UpdateCourseRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -27,8 +27,8 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public CourseDto getCourseById(Long id) {
-        return courseRepository.findById(id).map(courseMapper::courseToCourseDto).orElse(null);
+    public Course getCourseById(Long id) {
+        return courseRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Course Not found!"));
     }
 
     @Override
@@ -46,7 +46,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public void deleteCourse(Long id) {
+    public Boolean deleteCourse(Long id) {
         courseRepository.deleteById(id);
     }
 

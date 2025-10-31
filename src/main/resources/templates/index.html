@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <title>Course Center - Home</title>
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            color: white;
+            padding: 5rem 0;
+            margin-bottom: 3rem;
+            border-radius: 0.5rem;
+        }
+        .feature-card {
+            border: none;
+            border-radius: 0.5rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+            height: 100%;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #6c63ff;
+        }
+    </style>
+</head>
+<body>
+    <section layout:fragment="content">
+        <!-- Hero Section -->
+        <div class="hero-section text-center">
+            <div class="container">
+                <h1 class="display-4 fw-bold mb-4">Welcome to Course Center</h1>
+                <p class="lead mb-4">Enhance your skills with our wide range of professional courses</p>
+                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                    <a href="/courses" class="btn btn-light btn-lg px-4 me-sm-3">Browse Courses</a>
+                    <a href="#features" class="btn btn-outline-light btn-lg px-4">Learn More</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="container mb-5" id="features">
+            <h2 class="text-center mb-5">Why Choose Our Platform?</h2>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card feature-card p-4 h-100">
+                        <div class="text-center">
+                            <div class="feature-icon">
+                                <i class="bi bi-laptop"></i>
+                            </div>
+                            <h3>Expert Instructors</h3>
+                            <p>Learn from industry professionals with years of practical experience in their fields.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card feature-card p-4 h-100">
+                        <div class="text-center">
+                            <div class="feature-icon">
+                                <i class="bi bi-journal-bookmark"></i>
+                            </div>
+                            <h3>Comprehensive Courses</h3>
+                            <p>Access a wide range of courses designed to help you achieve your learning goals.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card feature-card p-4 h-100">
+                        <div class="text-center">
+                            <div class="feature-icon">
+                                <i class="bi bi-people"></i>
+                            </div>
+                            <h3>Community Support</h3>
+                            <p>Join a community of learners and get support from peers and instructors.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Popular Courses Preview -->
+        <div class="container mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Popular Courses</h2>
+                <a href="/courses" class="btn btn-outline-primary">View All Courses</a>
+            </div>
+            <div class="row row-cols-1 row-cols-md-3 g-4" id="popularCourses">
+                <!-- Popular courses will be loaded here via JavaScript -->
+                <div class="col-12 text-center my-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Loading popular courses...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="bg-light p-5 rounded-3 text-center mb-5">
+            <h2>Ready to start learning?</h2>
+            <p class="lead mb-4">Join thousands of students already learning with us</p>
+            <a href="/courses" class="btn btn-primary btn-lg">Get Started Now</a>
+        </div>
+    </section>
+
+    <th:block layout:fragment="script">
+        <script th:inline="javascript">
+            document.addEventListener('DOMContentLoaded', function() {
+                // Fetch and display popular courses
+                async function loadPopularCourses() {
+                    try {
+                        const response = await fetch('/api/courses?sort=popular&limit=3');
+                        if (!response.ok) {
+                            throw new Error('Failed to fetch popular courses');
+                        }
+
+                        const courses = await response.json();
+                        const coursesContainer = document.getElementById('popularCourses');
+
+                        if (courses.length === 0) {
+                            coursesContainer.innerHTML = `
+                                <div class="col-12 text-center">
+                                    <p>No popular courses available at the moment.</p>
+                                </div>
+                            `;
+                            return;
+                        }
+
+                        coursesContainer.innerHTML = courses.map(course => `
+                            <div class="col">
+                                <div class="card h-100">
+                                    <img src="${course.imageUrl || 'https://via.placeholder.com/300x200'}"
+                                         class="card-img-top"
+                                         alt="${course.name}">
+                                    <div class="card-body">
+                                        <h5 class="card-title">${course.name}</h5>
+                                        <p class="card-text text-muted">${course.instructor || 'Instructor not specified'}</p>
+                                        <p class="card-text">${course.shortDescription || (course.description ? course.description.substring(0, 100) + '...' : 'No description available.')}</p>
+                                    </div>
+                                    <div class="card-footer bg-transparent">
+                                        <a href="/courses/${course.id}" class="btn btn-primary w-100">View Course</a>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('');
+                    } catch (error) {
+                        console.error('Error loading popular courses:', error);
+                        document.getElementById('popularCourses').innerHTML = `
+                            <div class="col-12 text-center text-danger">
+                                <p>Failed to load popular courses. Please try again later.</p>
+                            </div>
+                        `;
+                    }
+                }
+
+                // Load popular courses when the page loads
+                loadPopularCourses();
+            });
+        </script>
+    </th:block>
+</body>
+</html>

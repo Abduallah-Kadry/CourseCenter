@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin Dashboard</title>
+</head>
+<body>
+    <nav>
+        <h1>Admin Dashboard</h1>
+        <button onclick="logout()">Logout</button>
+    </nav>
+
+    <div>
+        <h2>System Administration</h2>
+    </div>
+
+    <div class="admin-panel">
+        <section>
+            <h3>User Management</h3>
+            <button onclick="loadAllUsers()">View All Users</button>
+            <div id="usersList"></div>
+        </section>
+
+        <section>
+            <h3>Course Management</h3>
+            <button onclick="loadAllCourses()">View All Courses</button>
+            <div id="coursesList"></div>
+        </section>
+
+        <section>
+            <h3>System Stats</h3>
+            <div id="stats">Loading...</div>
+        </section>
+    </div>
+
+    <script th:inline="javascript">
+        const API_BASE = [[${@environment.getProperty('app.paths.api-base')}]];
+        const ADMIN_BASE = [[${@environment.getProperty('app.paths.admin-path')}]];
+
+        async function loadAllUsers() {
+            try {
+                const response = await fetch(`${API_BASE}${ADMIN_BASE}/users`, {
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const users = await response.json();
+                    displayUsers(users);
+                } else if (response.status === 401 || response.status === 403) {
+                    window.location.href = '/login';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        function displayUsers(users) {
+            const html = users.map(user => `
+                <div class="user-item">
+                    <span>${user.firstName} ${user.lastName}</span>
+                    <span>${user.email}</span>
+                    <span>Role: ${user.role}</span>
+                    <button onclick="editUser(${user.id})">Edit</button>
+                    <button onclick="deleteUser(${user.id})">Delete</button>
+                </div>
+            `).join('');
+
+            document.getElementById('usersList').innerHTML = html;
+        }
+
+        async function loadSystemStats() {
+            try {
+                const response = await fetch(`${API_BASE}${ADMIN_BASE}/stats`, {
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const stats = await response.json();
+                    document.getElementById('stats').innerHTML = `
+                        <p>Total Users: ${stats.totalUsers}</p>
+                        <p>Total Courses: ${stats.totalCourses}</p>
+                        <p>Active Enrollments: ${stats.activeEnrollments}</p>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        async function logout() {
+            try {
+                await fetch(`${API_BASE}/auth/logout`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                window.location.href = '/login';
+            } catch (error) {
+                window.location.href = '/login';
+            }
+        }
+
+        loadSystemStats();
+    </script>
+</body>
+</html>

@@ -2,7 +2,6 @@ package com.app.coursecenter.config.securityconfig;
 
 
 import com.app.coursecenter.repository.StudentRepository;
-import com.app.coursecenter.entity.StudentDetails;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -39,6 +38,7 @@ public class SecurityConfig {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + username));
     }
 
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -59,16 +59,25 @@ public class SecurityConfig {
         };
     }
 
+    /* todo
+     1. make sure that the login return a token that the browser uses until it expire or being destroyed by the logout
+     2. make sure that the specific roles are the ones who runs the right apis
+     3. make sure that calling apis return the right data
+
+     */
+
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(configurer ->
                 configurer
-                        .requestMatchers("/api/auth/register", "/api/auth/login","/swagger-ui/**", "/v3/api-docs/**",
-                                "/swagger-resources/**", "/webjars/**", "/docs").permitAll()
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        // here make the student only able to review his courses (think of how to let the student view his course (i think you should reuse the info mechanism)
-                        .anyRequest().authenticated()
-        );
+                        .requestMatchers(pathConfig.getAllPublicPaths()).permitAll()
+                        .requestMatchers(pathConfig.getPublicFrontEndPaths()).permitAll()
+                        .requestMatchers(pathConfig.getAuthFrontEndPaths()).authenticated()
+                        .requestMatchers(pathConfig.getAdminApiPath()).hasRole("ADMIN")
+                        .requestMatchers(pathConfig.getStudentApiPath()).hasRole("STUDENT")
+                        .requestMatchers(pathConfig.getTeacherApiPath()).hasRole("Teacher")
+                        .anyRequest().authenticated());
 
         http.csrf(AbstractHttpConfigurer::disable);
 
@@ -83,4 +92,5 @@ public class SecurityConfig {
 
         return http.build();
     }
+
 }
