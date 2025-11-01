@@ -5,6 +5,7 @@ import com.app.coursecenter.request.CreateCourseRequest;
 import com.app.coursecenter.request.UpdateCourseRequest;
 import com.app.coursecenter.response.ApiRespond;
 import com.app.coursecenter.response.CourseResponse;
+import com.app.coursecenter.service.CourseRatingService;
 import com.app.coursecenter.service.courseservice.CourseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,14 @@ import org.springframework.web.bind.annotation.*;
 public class CourseController {
 
     private final CourseService courseService;
+    private final CourseRatingService courseRatingService;
+
+    @GetMapping("{courseId}/average-rate")
+    public ResponseEntity<Double> getAverageRate(@PathVariable Long courseId) {
+        Double averageRate = courseRatingService.getAverageCourseRate(courseId);
+        return ResponseEntity.ok(averageRate);
+    }
+
 
     @PostMapping("")
     public ResponseEntity<ApiRespond> createCourse(@Valid @RequestBody CreateCourseRequest course) {
@@ -31,6 +40,7 @@ public class CourseController {
                 "course added successfully", courseService.addCourse(course)));
 
     }
+
 
     @GetMapping("")
     public ResponseEntity<ApiRespond> getAllCourses(

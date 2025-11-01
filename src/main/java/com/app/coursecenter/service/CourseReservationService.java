@@ -12,12 +12,10 @@ import java.nio.file.AccessDeniedException;
 @Service
 public class CourseReservationService {
 
-    private final CourseReservationRepository reservationRepository;
+
     private final KafkaTemplate<String, CourseReservationEvent> kafkaTemplate;
 
-    public CourseReservationService(CourseReservationRepository reservationRepository,
-                                    KafkaTemplate<String, CourseReservationEvent> kafkaTemplate) {
-        this.reservationRepository = reservationRepository;
+    public CourseReservationService(KafkaTemplate<String, CourseReservationEvent> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 

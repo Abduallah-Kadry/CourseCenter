@@ -1,14 +1,25 @@
 package com.app.coursecenter.service;
 
+import com.app.coursecenter.entity.Course;
+import com.app.coursecenter.repository.CourseReservationRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class CourseRatingService {
 
     private final CourseRatingProducer courseRatingProducer;
+    private final CourseReservationRepository reservationRepository;
 
-    public CourseRatingService(CourseRatingProducer courseRatingProducer) {
+    public CourseRatingService(CourseRatingProducer courseRatingProducer, CourseReservationRepository reservationRepository) {
         this.courseRatingProducer = courseRatingProducer;
+        this.reservationRepository = reservationRepository;
+    }
+
+    public Double getAverageCourseRate(Long courseId) {
+        Double avg = reservationRepository.findAverageRateByCourseId(courseId);
+        return avg != null ? avg : 0.0; // return 0.0 if no ratings yet
     }
 
     /**
