@@ -2,6 +2,7 @@ package com.app.coursecenter.controller.studentcontroller;
 
 import com.app.coursecenter.dto.StudentDto;
 import com.app.coursecenter.request.PasswordUpdateRequest;
+import com.app.coursecenter.response.UserCoursesRespond;
 import com.app.coursecenter.service.studentservice.StudentService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/students")
@@ -19,6 +21,12 @@ public class StudentController {
 
     public StudentController(StudentService studentService) {
         this.studentService = studentService;
+    }
+
+
+    @GetMapping("/enrolledCourses")
+    public List<UserCoursesRespond> getEnrolledCourses() {
+        return studentService.getEnrolledCourses();
     }
 
     @PostMapping("/rate")

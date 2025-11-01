@@ -2,9 +2,13 @@ package com.app.coursecenter.service.studentservice;
 
 import com.app.coursecenter.dto.StudentDto;
 import com.app.coursecenter.entity.Student;
+import com.app.coursecenter.mapper.CourseMapper;
 import com.app.coursecenter.mapper.StudentMapper;
+import com.app.coursecenter.repository.CourseReservationRepository;
 import com.app.coursecenter.repository.StudentRepository;
 import com.app.coursecenter.request.PasswordUpdateRequest;
+import com.app.coursecenter.response.UpdateCourseRespond;
+import com.app.coursecenter.response.UserCoursesRespond;
 import com.app.coursecenter.service.CourseRatingProducer;
 import com.app.coursecenter.service.CourseReservationCommandProducer;
 import com.app.coursecenter.util.FindAuthenticatedStudent;
@@ -15,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.nio.file.AccessDeniedException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class StudentServiceImpl implements StudentService {
@@ -25,17 +31,21 @@ public class StudentServiceImpl implements StudentService {
     private final FindAuthenticatedStudent findAuthenticatedStudent;
     private final CourseReservationCommandProducer producer;
     private final CourseRatingProducer ratingProducer;
+    private final CourseReservationRepository courseReservationRepository;
+    private final CourseMapper courseMapper;
 
-    public StudentServiceImpl(StudentRepository studentRepository, StudentMapper studentMapper, PasswordEncoder passwordEncoder,
-                              FindAuthenticatedStudent findAuthenticatedStudent,
-                              CourseReservationCommandProducer producer,
-                              CourseRatingProducer ratingProducer) {
+    public StudentServiceImpl(StudentRepository studentRepository, StudentMapper studentMapper,
+                              PasswordEncoder passwordEncoder, FindAuthenticatedStudent findAuthenticatedStudent,
+                              CourseReservationCommandProducer producer, CourseRatingProducer ratingProducer,
+                              CourseReservationRepository courseReservationRepository, CourseMapper courseMapper) {
         this.studentRepository = studentRepository;
         this.studentMapper = studentMapper;
         this.passwordEncoder = passwordEncoder;
         this.findAuthenticatedStudent = findAuthenticatedStudent;
         this.producer = producer;
         this.ratingProducer = ratingProducer;
+        this.courseReservationRepository = courseReservationRepository;
+        this.courseMapper = courseMapper;
     }
 
     // ---------------- Course Reservation Commands ----------------
@@ -78,6 +88,13 @@ public class StudentServiceImpl implements StudentService {
     public StudentDto getStudentInfo() throws AccessDeniedException {
         Student student = findAuthenticatedStudent.getAuthenticatedStudent();
         return studentMapper.map(student);
+    }
+
+
+    @Transactional
+    public List<UserCoursesRespond> getEnrolledCourses() {
+        return courseReservationRepository.findCoursesByStudentId(getCurrentUserId()).stream().
+                map(courseMapper::courseToUserCoursesRespond).collect(Collectors.toList());
     }
 
     // ---------------- Account Deletion ----------------
