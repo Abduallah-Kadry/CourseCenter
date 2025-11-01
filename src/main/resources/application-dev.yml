@@ -63,6 +63,12 @@ course-reservation:
         partitions: 3
         replication-factor: 1
 
+course-rating:
+  topic:
+    name: course-rating-events
+    partitions: 3
+    replication-factor: 1
+
 logging:
     level:
         com.app.coursecenter: DEBUG
@@ -83,8 +89,6 @@ management:
         metrics:
             export:
                 enabled: true
-
-
 
 
 # custom api that will override the default values in the ApiPathConfig class

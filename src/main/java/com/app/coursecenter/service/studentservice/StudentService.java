@@ -21,4 +21,6 @@ public interface StudentService {
     void requestCourseReservation(Long courseId);
 
     void cancelCourseReservation(Long reservationId);
+
+    void rateCourse(Long courseId, int rate);
 }

@@ -5,6 +5,7 @@ import com.app.coursecenter.entity.Student;
 import com.app.coursecenter.mapper.StudentMapper;
 import com.app.coursecenter.repository.StudentRepository;
 import com.app.coursecenter.request.PasswordUpdateRequest;
+import com.app.coursecenter.service.CourseRatingProducer;
 import com.app.coursecenter.service.CourseReservationCommandProducer;
 import com.app.coursecenter.util.FindAuthenticatedStudent;
 import org.springframework.http.HttpStatus;
@@ -23,17 +24,18 @@ public class StudentServiceImpl implements StudentService {
     private final PasswordEncoder passwordEncoder;
     private final FindAuthenticatedStudent findAuthenticatedStudent;
     private final CourseReservationCommandProducer producer;
+    private final CourseRatingProducer ratingProducer;
 
-    public StudentServiceImpl(StudentRepository studentRepository,
-                              StudentMapper studentMapper,
-                              PasswordEncoder passwordEncoder,
+    public StudentServiceImpl(StudentRepository studentRepository, StudentMapper studentMapper, PasswordEncoder passwordEncoder,
                               FindAuthenticatedStudent findAuthenticatedStudent,
-                              CourseReservationCommandProducer producer) {
+                              CourseReservationCommandProducer producer,
+                              CourseRatingProducer ratingProducer) {
         this.studentRepository = studentRepository;
         this.studentMapper = studentMapper;
         this.passwordEncoder = passwordEncoder;
         this.findAuthenticatedStudent = findAuthenticatedStudent;
         this.producer = producer;
+        this.ratingProducer = ratingProducer;
     }
 
     // ---------------- Course Reservation Commands ----------------
@@ -44,6 +46,13 @@ public class StudentServiceImpl implements StudentService {
 
     public void cancelCourseReservation(Long courseId) {
         producer.sendCancelReservationCommand(getCurrentUserId(), getCurrentUserEmail(), courseId);
+    }
+
+    @Override
+    public void rateCourse(Long courseId, int rate) {
+        Long studentId = getCurrentUserId();
+        String studentEmail = getCurrentUserEmail();
+        ratingProducer.sendCourseRatingCommand(studentId,studentEmail, courseId, rate);
     }
 
     private Long getCurrentUserId() {

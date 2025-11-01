@@ -21,6 +21,12 @@ public class StudentController {
         this.studentService = studentService;
     }
 
+    @PostMapping("/rate")
+    public ResponseEntity<?> rateCourse(@RequestParam Long courseId, @RequestParam int rate) {
+        studentService.rateCourse(courseId, rate);
+        return ResponseEntity.accepted().body("Rating event sent successfully!");
+    }
+
     @PostMapping("/reserve")
     public ResponseEntity<?> reserveCourse(@RequestParam Long courseId) {
         studentService.requestCourseReservation(courseId);

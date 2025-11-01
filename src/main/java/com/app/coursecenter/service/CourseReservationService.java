@@ -1,5 +1,6 @@
 package com.app.coursecenter.service;
 
+import com.app.coursecenter.dto.CourseRatedEvent;
 import com.app.coursecenter.dto.CourseReservationEvent;
 import com.app.coursecenter.repository.CourseReservationRepository;
 import com.app.coursecenter.util.FindAuthenticatedStudent;
@@ -13,6 +14,7 @@ public class CourseReservationService {
 
     private final CourseReservationRepository reservationRepository;
     private final KafkaTemplate<String, CourseReservationEvent> kafkaTemplate;
+
     public CourseReservationService(CourseReservationRepository reservationRepository,
                                     KafkaTemplate<String, CourseReservationEvent> kafkaTemplate) {
         this.reservationRepository = reservationRepository;

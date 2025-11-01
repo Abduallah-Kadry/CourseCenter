@@ -33,6 +33,12 @@ public class CourseReservation {
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;
 
+    @Column(name = "course_rate")
+    private Integer courseRate;
+
+    @Column(name = "rating_time")
+    private LocalDateTime ratingTime;
+
     @Column(name = "reservation_time", nullable = false)
     private LocalDateTime reservationTime = LocalDateTime.now();
 
