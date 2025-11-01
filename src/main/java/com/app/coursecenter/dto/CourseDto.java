@@ -8,14 +8,11 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+
 public class CourseDto {
-
     private Long id;
-
     private String name;
-
     private String description;
-
     private int creditHours;
 
     @Version

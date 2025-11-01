@@ -1,24 +1,20 @@
 package com.app.coursecenter.service.courseservice;
 
-import com.app.coursecenter.dto.CourseDto;
-import com.app.coursecenter.entity.Course;
 import com.app.coursecenter.request.CreateCourseRequest;
+import com.app.coursecenter.request.UpdateCourseRequest;
+import com.app.coursecenter.response.CourseResponse;
 import org.springframework.data.domain.Page;
 
-import java.util.List;
-import java.util.Set;
-
 public interface CourseService {
-    Page<CourseDto> getAllCourses(int page, int size);
+    Page<CourseResponse> getAllCourses(int page, int size);
 
-    CourseDto getCourseById(Long id);
+    CourseResponse getCourseById(Long id);
 
+    CourseResponse addCourse(CreateCourseRequest course);
 
-    Course addCourse(CreateCourseRequest course);
+    CourseResponse updateCourse(Long id, UpdateCourseRequest courseDto);
 
-    Course updateCourse(Long id, CourseDto courseDto);
-
-    void deleteCourse(Long id);
+    Boolean deleteCourse(Long id);
 
     //Set<Course> getCoursesByStudentId(Long studentId);
 }

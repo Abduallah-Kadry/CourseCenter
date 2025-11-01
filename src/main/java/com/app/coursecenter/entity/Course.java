@@ -14,11 +14,14 @@ public class Course extends BaseEntity {
     private String name;
     private String description;
     private String imageUrl;
-    private double cost;
+    private Double cost;
 
-    @Min(1) @Max(5)
+    // checks may fail if mysql is less than version 8.0
+    @Column(columnDefinition = "INT CHECK (rating >= 0 AND rating <= 5)")
     private Integer rating;
-    private int creditHours;
+
+    @Column(name = "credit_hours", nullable = false, columnDefinition = "INT CHECK (credit_hours BETWEEN 1 AND 4)")
+    private Integer creditHours;
 
     @Version
     private int version;

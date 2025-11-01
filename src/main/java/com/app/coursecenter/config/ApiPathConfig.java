@@ -40,6 +40,7 @@ public class ApiPathConfig {
             "/reset-password",
 
     };
+
     private String[] frontEndAuthPages = {"/profile", "/setting", "/dashboard"};
 
 

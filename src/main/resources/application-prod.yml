@@ -83,3 +83,43 @@ management:
         metrics:
             export:
                 enabled: true
+
+
+
+
+# custom api
+app:
+  paths:
+    api-base: /api
+    frontend-base: /page
+    auth-base: /auth
+
+    admin-base: /admin
+    student-base: /student
+    teacher-base: /teacher
+
+    public-paths:
+      - /
+      - /swagger-ui/**
+      - /v3/api-docs/**
+      - /swagger-resources/**
+      - /webjars/**
+      - /docs
+      - /error
+
+    front-end-public-pages:
+      - /courses
+      - /login
+      - /register
+      - /index
+      - /forgot-password
+      - /reset-password
+
+    front-end-auth-pages:
+      - /profile
+      - /setting
+      - /dashboard
+
+    auth-endpoints:
+      - /register
+      - /login

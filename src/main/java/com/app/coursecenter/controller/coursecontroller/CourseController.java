@@ -1,14 +1,17 @@
 package com.app.coursecenter.controller.coursecontroller;
 
-import com.app.coursecenter.entity.Course;
+import com.app.coursecenter.dto.CourseDto;
 import com.app.coursecenter.request.CreateCourseRequest;
+import com.app.coursecenter.request.UpdateCourseRequest;
+import com.app.coursecenter.response.ApiRespond;
+import com.app.coursecenter.response.CourseResponse;
 import com.app.coursecenter.service.courseservice.CourseService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/course")
@@ -22,42 +25,31 @@ public class CourseController {
 
     private final CourseService courseService;
 
-
     @PostMapping("")
-    public ResponseEntity<ApiRespond> createCourse(@RequestBody CreateCourseRequest course) {
-        try {
-            return ResponseEntity.ok(new ApiRespond(HttpStatus.OK,
-                    "course added successfully", courseService.addCourse(course)));
-        } catch (Exception e) {
-          return ResponseEntity.ok(new ApiRespond(HttpStatus.OK,
-                    "Problem occurred", e.getMessage()));
-        }
+    public ResponseEntity<ApiRespond> createCourse(@Valid @RequestBody CreateCourseRequest course) {
+        return ResponseEntity.ok(new ApiRespond(HttpStatus.OK,
+                "course added successfully", courseService.addCourse(course)));
+
     }
 
     @GetMapping("")
-    public ResponseEntity<Page<CourseDto>> getAllCourses(
+    public ResponseEntity<ApiRespond> getAllCourses(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        try {
-                Page<CourseDto> courses = courseService.getAllCourses(page, size);
-            return ResponseEntity.ok(new ApiRespond(HttpStatus.OK, "All Courses", courses));
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
+            @RequestParam(defaultValue = "20") int size) {
+
+        Page<CourseResponse> courses = courseService.getAllCourses(page, size);
+        return ResponseEntity.ok(new ApiRespond(HttpStatus.OK, "All Courses", courses));
+
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ApiRespond> updateCourse(@PathVariable long id, @RequestBody UpdateCourseRequest course) {
-        try {
-            return ResponseEntity.ok(new ApiRespond(HttpStatus.OK,
-                    "course updated successfully", courseService.updateCourse(id, course)));
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
+        return ResponseEntity.ok(new ApiRespond(HttpStatus.OK,
+                "course updated successfully", courseService.updateCourse(id, course)));
     }
 
     @GetMapping("/id")
-    public ResponseEntity<CourseDto> getCourseById(@RequestParam("id") long id) {
+    public ResponseEntity<CourseResponse> getCourseById(@RequestParam("id") long id) {
         try {
             //
             return ResponseEntity.ok(courseService.getCourseById(id));

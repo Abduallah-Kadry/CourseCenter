@@ -55,7 +55,7 @@ spring:
 
 jwt:
     secret: ${JWT_SECRET:370fc2ad32927ff329d2807b020a92cbde3d349b44c19304d3c8e8b107365042}
-    expiration: 900000  # 15 minutes
+    expiration: 14400000  # 4 hours => 240 minutes => 14400 seconds
 
 course-reservation:
     topic:
@@ -83,3 +83,43 @@ management:
         metrics:
             export:
                 enabled: true
+
+
+
+
+# custom api that will override the default values in the ApiPathConfig class
+app:
+  paths:
+    api-base: /api
+    frontend-base: /page
+    auth-base: /auth
+
+    admin-base: /admin
+    student-base: /student
+    teacher-base: /teacher
+
+    public-paths:
+      - /
+      - /swagger-ui/**
+      - /v3/api-docs/**
+      - /swagger-resources/**
+      - /webjars/**
+      - /docs
+      - /error
+
+    front-end-public-pages:
+      - /courses
+      - /login
+      - /register
+      - /index
+      - /forgot-password
+      - /reset-password
+
+    front-end-auth-pages:
+      - /profile
+      - /setting
+      - /dashboard
+
+    auth-endpoints:
+      - /register
+      - /login

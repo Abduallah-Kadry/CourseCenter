@@ -1,6 +1,5 @@
 package com.app.coursecenter.controller;
 
-import com.app.coursecenter.dto.CourseDto;
 import com.app.coursecenter.dto.StudentDto;
 import com.app.coursecenter.service.adminservice.AdminService;
 import io.swagger.v3.oas.annotations.Operation;

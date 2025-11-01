@@ -2,6 +2,7 @@ package com.app.coursecenter.service.authenticationservice;
 
 import com.app.coursecenter.entity.Authority;
 import com.app.coursecenter.entity.Student;
+import com.app.coursecenter.entity.StudentDetails;
 import com.app.coursecenter.exception.InvalidCredentialException;
 import com.app.coursecenter.repository.StudentRepository;
 import com.app.coursecenter.request.AuthenticationRequest;
@@ -62,8 +63,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
     }
-
-
 
     private boolean isEmailTaken(String email) {
         return studentRepository.findByEmail(email).isPresent();

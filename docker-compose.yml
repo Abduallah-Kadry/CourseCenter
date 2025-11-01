@@ -11,6 +11,7 @@ services:
     networks:
       - course-center-network
 
+
   # 🦩 Kafka Broker
   kafka:
     image: confluentinc/cp-kafka:7.5.0
