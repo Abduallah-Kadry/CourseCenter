@@ -1,67 +1,67 @@
 server:
-    port: 8080
+  port: 8080
 
 spring:
-    datasource:
-        # ✅ Use the Docker service name (not localhost)
-        url: jdbc:mysql://localhost:3307/coursecenterdb
-        username: courseuser
-        password: coursepass
-        driver-class-name: com.mysql.cj.jdbc.Driver
+  datasource:
+    # ✅ Use the Docker service name (not localhost)
+    url: jdbc:mysql://localhost:3307/coursecenterdb
+    username: courseuser
+    password: coursepass
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
-    jpa:
-        hibernate:
-            ddl-auto: update
-        show-sql: true
-        properties:
-            hibernate:
-                dialect: org.hibernate.dialect.MySQL8Dialect
-                format_sql: true
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
 
-    kafka:
-        bootstrap-servers: localhost:29092
+  kafka:
+    bootstrap-servers: localhost:29092
 
-        producer:
-            key-serializer: org.apache.kafka.common.serialization.StringSerializer
-            value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-            acks: all
-            retries: 3
-            properties:
-                enable.idempotence: true
-                max.in.flight.requests.per.connection: 5
-                compression.type: snappy
-                batch.size: 16384
-                linger.ms: 10
-                buffer.memory: 33554432
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      retries: 3
+      properties:
+        enable.idempotence: true
+        max.in.flight.requests.per.connection: 5
+        compression.type: snappy
+        batch.size: 16384
+        linger.ms: 10
+        buffer.memory: 33554432
 
-        consumer:
-            group-id: reservation-service-group
-            auto-offset-reset: earliest
-            key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-            value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-            enable-auto-commit: false
-            properties:
-                spring.json.trusted.packages: "com.app.coursecenter.dto"
-                max.poll.records: 500
-                fetch.min.bytes: 1024
-                fetch.max.wait.ms: 500
-                session.timeout.ms: 30000
-                heartbeat.interval.ms: 10000
+    consumer:
+      group-id: reservation-service-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      enable-auto-commit: false
+      properties:
+        spring.json.trusted.packages: "com.app.coursecenter.dto"
+        max.poll.records: 500
+        fetch.min.bytes: 1024
+        fetch.max.wait.ms: 500
+        session.timeout.ms: 30000
+        heartbeat.interval.ms: 10000
 
-        listener:
-            ack-mode: manual
-            concurrency: 3
-            type: batch
+    listener:
+      ack-mode: manual
+      concurrency: 3
+      type: batch
 
 jwt:
-    secret: ${JWT_SECRET:370fc2ad32927ff329d2807b020a92cbde3d349b44c19304d3c8e8b107365042}
-    expiration: 14400000  # 4 hours => 240 minutes => 14400 seconds
+  secret: ${JWT_SECRET:370fc2ad32927ff329d2807b020a92cbde3d349b44c19304d3c8e8b107365042}
+  expiration: 14400000  # 4 hours => 240 minutes => 14400 seconds
 
 course-reservation:
-    topic:
-        name: course-reservation-events
-        partitions: 3
-        replication-factor: 1
+  topic:
+    name: course-reservation-events
+    partitions: 3
+    replication-factor: 1
 
 course-rating:
   topic:
@@ -70,47 +70,49 @@ course-rating:
     replication-factor: 1
 
 logging:
-    level:
-        com.app.coursecenter: DEBUG
-        org.springframework.kafka: INFO
-        org.apache.kafka: WARN
-    pattern:
-        console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  level:
+    com.app.coursecenter: DEBUG
+    org.springframework.kafka: INFO
+    org.apache.kafka: WARN
+    org.springframework.security: DEBUG
+
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
 
 management:
-    endpoints:
-        web:
-            exposure:
-                include: health,info,metrics,prometheus
-    endpoint:
-        health:
-            show-details: always
-    prometheus:
-        metrics:
-            export:
-                enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  prometheus:
+    metrics:
+      export:
+        enabled: true
 
 
 # custom api that will override the default values in the ApiPathConfig class
 app:
   paths:
+    # Base paths
     api-base: /api
     frontend-base: /page
-    auth-base: /auth
 
-    admin-base: /admin
-    student-base: /student
-    teacher-base: /teacher
-
+    # Public endpoints (no auth required)
     public-paths:
       - /
       - /swagger-ui/**
       - /v3/api-docs/**
+      - /uploads/**
       - /swagger-resources/**
       - /webjars/**
       - /docs
       - /error
 
+
+    # Frontend public pages
     front-end-public-pages:
       - /courses
       - /login
@@ -119,11 +121,36 @@ app:
       - /forgot-password
       - /reset-password
 
+    # Frontend authenticated pages
     front-end-auth-pages:
       - /profile
       - /setting
       - /dashboard
 
+    # Auth endpoints
+    auth-base: /auth
+
     auth-endpoints:
       - /register
       - /login
+
+    # Role-based paths
+    admin-base: /admin
+    student-base: /student
+    teacher-base: /teacher
+
+
+    # Course-related paths
+    course-base: /course
+
+    public-course-api-paths:
+      - ""
+      - /{id}
+      - /{id}/average-rate
+
+    public-course-front-paths:
+      - ""
+      - /{id}
+
+    admin-course-paths:
+      - /add

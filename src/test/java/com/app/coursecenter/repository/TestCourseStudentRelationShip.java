@@ -2,7 +2,7 @@ package com.app.coursecenter.repository;
 
 
 import com.app.coursecenter.entity.Course;
-import com.app.coursecenter.entity.Student;
+import com.app.coursecenter.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
@@ -21,7 +21,7 @@ public class TestCourseStudentRelationShip {
     CourseRepository courseRepository;
 
     @Autowired
-    StudentRepository studentRepository;
+    UserRepository userRepository;
 
 
     private Course produceOneCourse() {
@@ -32,13 +32,13 @@ public class TestCourseStudentRelationShip {
         return course;
     }
 
-    private Student produceOneStudent() {
-        Student student = new Student();
-        student.setFirstName("John");
-        student.setLastName("Doe");
-        student.setEmail("john.doe@example.com");
-        student.setPassword("password123");
-        return student;
+    private User produceOneStudent() {
+        User user = new User();
+        user.setFirstName("John");
+        user.setLastName("Doe");
+        user.setEmail("john.doe@example.com");
+        user.setPassword("password123");
+        return user;
     }
 
 }

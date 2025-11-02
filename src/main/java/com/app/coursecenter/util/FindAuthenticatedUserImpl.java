@@ -1,7 +1,7 @@
 package com.app.coursecenter.util;
 
-import com.app.coursecenter.entity.Student;
-import com.app.coursecenter.entity.StudentDetails;
+import com.app.coursecenter.entity.User;
+import com.app.coursecenter.entity.UserCredintials;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -9,10 +9,10 @@ import org.springframework.stereotype.Component;
 import java.nio.file.AccessDeniedException;
 
 @Component
-public class FindAuthenticatedStudentImpl implements FindAuthenticatedStudent {
+public class FindAuthenticatedUserImpl implements FindAuthenticatedUser {
 
     @Override
-    public Student getAuthenticatedStudent() throws AccessDeniedException {
+    public User getAuthenticatedUser() throws AccessDeniedException {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -25,13 +25,13 @@ public class FindAuthenticatedStudentImpl implements FindAuthenticatedStudent {
         Object principal = authentication.getPrincipal();
 
         // --- Safely unwrap StudentDetails ---
-        if (principal instanceof StudentDetails studentDetails) {
-            return studentDetails.getStudent();
+        if (principal instanceof UserCredintials userCredintials) {
+            return userCredintials.getUser();
         }
 
         // --- Fallback: if someone manually injected Student into context (e.g., during testing) ---
-        if (principal instanceof Student student) {
-            return student;
+        if (principal instanceof User user) {
+            return user;
         }
 
         throw new AccessDeniedException("Invalid principal type");

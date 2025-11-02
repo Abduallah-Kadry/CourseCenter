@@ -1,17 +1,16 @@
-package com.app.coursecenter.service.studentservice;
+package com.app.coursecenter.service.userservice;
 
-import com.app.coursecenter.dto.StudentDto;
-import com.app.coursecenter.entity.Student;
+import com.app.coursecenter.dto.UserDto;
+import com.app.coursecenter.entity.User;
 import com.app.coursecenter.mapper.CourseMapper;
-import com.app.coursecenter.mapper.StudentMapper;
+import com.app.coursecenter.mapper.UserMapper;
 import com.app.coursecenter.repository.CourseReservationRepository;
-import com.app.coursecenter.repository.StudentRepository;
+import com.app.coursecenter.repository.UserRepository;
 import com.app.coursecenter.request.PasswordUpdateRequest;
-import com.app.coursecenter.response.UpdateCourseRespond;
 import com.app.coursecenter.response.UserCoursesRespond;
 import com.app.coursecenter.service.CourseRatingProducer;
 import com.app.coursecenter.service.CourseReservationCommandProducer;
-import com.app.coursecenter.util.FindAuthenticatedStudent;
+import com.app.coursecenter.util.FindAuthenticatedUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,25 +22,25 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class StudentServiceImpl implements StudentService {
+public class UserServiceImpl implements UserService {
 
-    private final StudentRepository studentRepository;
-    private final StudentMapper studentMapper;
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
-    private final FindAuthenticatedStudent findAuthenticatedStudent;
+    private final FindAuthenticatedUser findAuthenticatedUser;
     private final CourseReservationCommandProducer producer;
     private final CourseRatingProducer ratingProducer;
     private final CourseReservationRepository courseReservationRepository;
     private final CourseMapper courseMapper;
 
-    public StudentServiceImpl(StudentRepository studentRepository, StudentMapper studentMapper,
-                              PasswordEncoder passwordEncoder, FindAuthenticatedStudent findAuthenticatedStudent,
-                              CourseReservationCommandProducer producer, CourseRatingProducer ratingProducer,
-                              CourseReservationRepository courseReservationRepository, CourseMapper courseMapper) {
-        this.studentRepository = studentRepository;
-        this.studentMapper = studentMapper;
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper,
+                           PasswordEncoder passwordEncoder, FindAuthenticatedUser findAuthenticatedUser,
+                           CourseReservationCommandProducer producer, CourseRatingProducer ratingProducer,
+                           CourseReservationRepository courseReservationRepository, CourseMapper courseMapper) {
+        this.userRepository = userRepository;
+        this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
-        this.findAuthenticatedStudent = findAuthenticatedStudent;
+        this.findAuthenticatedUser = findAuthenticatedUser;
         this.producer = producer;
         this.ratingProducer = ratingProducer;
         this.courseReservationRepository = courseReservationRepository;
@@ -67,7 +66,7 @@ public class StudentServiceImpl implements StudentService {
 
     private Long getCurrentUserId() {
         try {
-            return findAuthenticatedStudent.getAuthenticatedStudent().getId();
+            return findAuthenticatedUser.getAuthenticatedUser().getId();
         } catch (AccessDeniedException e) {
             throw new RuntimeException("Unauthorized access", e);
         }
@@ -75,7 +74,7 @@ public class StudentServiceImpl implements StudentService {
 
     private String getCurrentUserEmail() {
         try {
-            return findAuthenticatedStudent.getAuthenticatedStudent().getEmail();
+            return findAuthenticatedUser.getAuthenticatedUser().getEmail();
         } catch (AccessDeniedException e) {
             throw new RuntimeException("Unauthorized access", e);
         }
@@ -85,38 +84,38 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     @Transactional(readOnly = true)
-    public StudentDto getStudentInfo() throws AccessDeniedException {
-        Student student = findAuthenticatedStudent.getAuthenticatedStudent();
-        return studentMapper.map(student);
+    public UserDto getUserInfo() throws AccessDeniedException {
+        User user = findAuthenticatedUser.getAuthenticatedUser();
+        return userMapper.map(user);
     }
 
 
     @Transactional
     public List<UserCoursesRespond> getEnrolledCourses() {
-        return courseReservationRepository.findCoursesByStudentId(getCurrentUserId()).stream().
+        return courseReservationRepository.findCoursesByUserId(getCurrentUserId()).stream().
                 map(courseMapper::courseToUserCoursesRespond).collect(Collectors.toList());
     }
 
     // ---------------- Account Deletion ----------------
 
     @Override
-    public void deleteStudent() throws AccessDeniedException {
-        Student student = findAuthenticatedStudent.getAuthenticatedStudent();
+    public void deleteUser() throws AccessDeniedException {
+        User user = findAuthenticatedUser.getAuthenticatedUser();
 
-        if (isLastAdmin(student)) {
+        if (isLastAdmin(user)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Admin cannot delete itself");
         }
 
-        studentRepository.delete(student);
+        userRepository.delete(user);
     }
 
     // ---------------- Password Update ----------------
 
     @Override
     public void updatePassword(PasswordUpdateRequest passwordUpdateRequest) throws AccessDeniedException {
-        Student student = findAuthenticatedStudent.getAuthenticatedStudent();
+        User user = findAuthenticatedUser.getAuthenticatedUser();
 
-        if (!isOldPasswordCorrect(student.getPassword(), passwordUpdateRequest.getOldPassword())) {
+        if (!isOldPasswordCorrect(user.getPassword(), passwordUpdateRequest.getOldPassword())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Old password incorrect");
         }
 
@@ -124,12 +123,12 @@ public class StudentServiceImpl implements StudentService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "New passwords don't match");
         }
 
-        if (!isNewPasswordDifferent(student.getPassword(), passwordUpdateRequest.getNewPassword())) {
+        if (!isNewPasswordDifferent(user.getPassword(), passwordUpdateRequest.getNewPassword())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Old and new passwords must be different");
         }
 
-        student.setPassword(passwordEncoder.encode(passwordUpdateRequest.getNewPassword()));
-        studentRepository.save(student);
+        user.setPassword(passwordEncoder.encode(passwordUpdateRequest.getNewPassword()));
+        userRepository.save(user);
     }
 
     private boolean isOldPasswordCorrect(String encodedPassword, String oldRawPassword) {
@@ -146,11 +145,11 @@ public class StudentServiceImpl implements StudentService {
         return !passwordEncoder.matches(newRawPassword, oldEncodedPassword);
     }
 
-    private boolean isLastAdmin(Student student) {
-        boolean isAdmin = student.getAuthorities().stream()
+    private boolean isLastAdmin(User user) {
+        boolean isAdmin = user.getAuthorities().stream()
                 .anyMatch(auth -> "ROLE_ADMIN".equals(auth.getAuthority()));
         if (isAdmin) {
-            long adminCount = studentRepository.countAdminStudents();
+            long adminCount = userRepository.countAdminUser();
             return adminCount <= 1;
         }
         return false;

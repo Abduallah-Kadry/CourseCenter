@@ -8,18 +8,24 @@ import com.app.coursecenter.request.UpdateCourseRequest;
 import com.app.coursecenter.response.CourseResponse;
 import com.app.coursecenter.response.UserCoursesRespond;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 
 public interface CourseMapper {
 
     Course courseCreateRequestToCourse(CreateCourseRequest courseRequest);
+
     Course courseUpdateRequestToCourse(UpdateCourseRequest courseRequest);
+
 
     CourseResponse courseToCourseResponse(Course course);
 
     Course courseDtoToCourse(CourseDto courseDto);
 
     UserCoursesRespond courseToUserCoursesRespond(Course course);
+
+
+
 
 }

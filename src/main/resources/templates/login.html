@@ -1,78 +1,216 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Course Center</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .login-container {
+            max-width: 400px;
+            margin: auto;
+            padding: 2rem;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+        .form-control:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+        .btn-primary {
+            background-color: #0d6efd;
+            border: none;
+            padding: 0.5rem 1.5rem;
+        }
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+        }
+        .forgot-password {
+            color: #6c757d;
+            text-decoration: none;
+        }
+        .forgot-password:hover {
+            color: #0d6efd;
+        }
+    </style>
 </head>
-<body>
-<div layout:fragment="content">
-    <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-4">
-            <div class="card shadow">
-                <div class="card-body">
-                    <h2 class="card-title text-center mb-4">Login</h2>
-                    <!-- Display error message if authentication fails -->
-                    <div th:if="${param.error}" class="alert alert-danger" role="alert">
-                        Invalid username or password.
-                    </div>
+<body class="bg-light">
+<nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="#">CourseCenter</a>
+    </div>
+</nav>
 
-                    <!-- Display message if user logs out -->
-                    <div th:if="${param.logout}" class="alert alert-success" role="alert">
-                        You have been logged out successfully.
-                    </div>
+<div class="container">
+    <div class="login-container">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold">Welcome Back</h2>
+            <p class="text-muted">Sign in to access your account</p>
+        </div>
 
-                    <form id="loginForm">
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email address</label>
-                            <input type="email" class="form-control" id="email" name="email" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="password" name="password" required>
-                        </div>
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">Sign in</button>
-                        </div>
-                    </form>
+        <div class="card">
+            <div class="card-body p-4">
+                <!-- Display error message if authentication fails (hidden by default) -->
+                <div id="errorAlert" class="alert alert-danger alert-dismissible fade show d-none" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    Invalid email or password. Please try again.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
 
-                    <div class="mt-3 text-center">
-                        <a href="#" class="text-decoration-none">Forgot password?</a>
+                <!-- Display message if user logs out (hidden by default) -->
+                <div id="logoutAlert" class="alert alert-success alert-dismissible fade show d-none" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    You have been logged out successfully.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
+                <form id="loginForm">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email address</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                            <input type="email" class="form-control" id="email" name="email"
+                                   placeholder="Enter your email" required>
+                        </div>
                     </div>
+                    <div class="mb-4">
+                        <label for="password" class="form-label">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                            <input type="password" class="form-control" id="password" name="password"
+                                   placeholder="Enter your password" required>
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary py-2">
+                            <span id="loginText">Sign In</span>
+                            <div id="loginSpinner" class="spinner-border spinner-border-sm d-none" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </button>
+                    </div>
+                </form>
+
+                <div class="text-center mt-3">
+
+                    Don't have an account?<a class="forgot-password" th:href="@{${@environment.getProperty('app.paths.frontend-base')} + '/register'}">
+                       Register
+                    </a>
+                </div>
+                <div class="text-center mt-3">
+                    <a href="#" class="forgot-password">
+                        <i class="bi bi-question-circle me-1"></i>Forgot password?
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<script th:inline="javascript">
-  const API_BASE = [[${@environment.getProperty('app.paths.api-base')}]];
-  const AUTH_BASE = [[${@environment.getProperty('app.paths.auth-base')}]];
-  const FRONTEND_BASE = [[${@environment.getProperty('app.paths.frontend-base')}]];
 
+<!-- Bootstrap JS Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  const API_BASE = "[[${@environment.getProperty('app.paths.api-base')}]]";
+  const AUTH_BASE = "[[${@environment.getProperty('app.paths.auth-base')}]]";
+  const FRONTEND_BASE = "[[${@environment.getProperty('app.paths.frontend-base')}]]";
+  const COURSE_BASE = "[[${@environment.getProperty('app.paths.course-base')}]]";
+
+  // Check URL parameters on page load
+  window.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+
+    // Show logout message if logout parameter exists
+    if (urlParams.get('logout') === 'true') {
+      document.getElementById('logoutAlert').classList.remove('d-none');
+    }
+
+    // Show error message if error parameter exists
+    if (urlParams.get('error') === 'true') {
+      document.getElementById('errorAlert').classList.remove('d-none');
+    }
+  });
 
   document.getElementById("loginForm").addEventListener("submit", async (e) => {
     e.preventDefault();
+
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
+    const loginBtn = document.querySelector("#loginForm button[type='submit']");
+    const loginText = document.getElementById("loginText");
+    const loginSpinner = document.getElementById("loginSpinner");
 
-    const respond = await fetch(`${API_BASE}${AUTH_BASE}/login`, {
-      method: "post",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({email, password}),
-      credentials: "include" // IMPORTANT: include cookies
-    })
+    // Show loading state
+    loginBtn.disabled = true;
+    loginText.textContent = "Signing in...";
+    loginSpinner.classList.remove("d-none");
 
-    console.log(JSON.stringify({email,password}))
-    console.log(respond)
-    if (respond.ok) {
-      window.location.href = FRONTEND_BASE + "/dashboard";
-    } else {
-      alert("invalid username or password")
+    try {
+      const response = await fetch(`${API_BASE}${AUTH_BASE}/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+        credentials: "include"
+      });
+
+      if (response.ok) {
+        window.location.href = FRONTEND_BASE + COURSE_BASE;
+      } else {
+        const error = await response.text();
+        showNotification("Invalid email or password. Please try again.", "danger");
+        // Clear password field on error
+        document.getElementById("password").value = "";
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      showNotification("An error occurred. Please try again later.", "danger");
+    } finally {
+      // Reset button state
+      loginBtn.disabled = false;
+      loginText.textContent = "Sign In";
+      loginSpinner.classList.add("d-none");
     }
-
   });
 
+  // Show notification function
+  function showNotification(message, type = 'success') {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 end-0 m-3`;
+    alertDiv.style.zIndex = '1100';
+    alertDiv.role = 'alert';
+    alertDiv.innerHTML = `
+      <i class="bi ${type === 'danger' ? 'bi-exclamation-triangle-fill' : 'bi-check-circle-fill'} me-2"></i>
+      ${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    document.body.appendChild(alertDiv);
 
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+      const bsAlert = new bootstrap.Alert(alertDiv);
+      bsAlert.close();
+    }, 5000);
+  }
 </script>
 </body>
 </html>

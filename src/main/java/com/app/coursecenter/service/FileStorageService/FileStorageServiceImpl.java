@@ -29,7 +29,7 @@ public class FileStorageServiceImpl implements FileStorageService {
 
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-        return "/images/" + folder + "/" + filename;
+        return "/uploads/" + folder + "/" + filename;
 
     }
 }

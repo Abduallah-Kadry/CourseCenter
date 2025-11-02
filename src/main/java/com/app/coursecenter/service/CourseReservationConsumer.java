@@ -3,32 +3,33 @@ package com.app.coursecenter.service;
 import com.app.coursecenter.dto.CourseReservationEvent;
 import com.app.coursecenter.entity.Course;
 import com.app.coursecenter.entity.CourseReservation;
-import com.app.coursecenter.entity.Student;
+import com.app.coursecenter.entity.User;
 import com.app.coursecenter.repository.CourseRepository;
 import com.app.coursecenter.repository.CourseReservationRepository;
-import com.app.coursecenter.repository.StudentRepository;
+import com.app.coursecenter.repository.UserRepository;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
+
 
 @Service
 public class CourseReservationConsumer {
 
     private final CourseReservationRepository reservationRepository;
-    private final StudentRepository studentRepository;
+    private final UserRepository userRepository;
     private final CourseRepository courseRepository;
 
     public CourseReservationConsumer(
             CourseReservationRepository reservationRepository,
-            StudentRepository studentRepository,
+            UserRepository userRepository,
             CourseRepository courseRepository
     ) {
         this.reservationRepository = reservationRepository;
-        this.studentRepository = studentRepository;
+        this.userRepository = userRepository;
         this.courseRepository = courseRepository;
     }
+
 
     @KafkaListener(
             topics = "${course-reservation.topic.name}",
@@ -46,22 +47,22 @@ public class CourseReservationConsumer {
     }
 
     private void handleReservationCreated(CourseReservationEvent event) {
-        Student student = studentRepository.findById(event.getStudentId())
+        User user = userRepository.findById(event.getStudentId())
                 .orElseThrow(() -> new RuntimeException("Student not found: " + event.getStudentId()));
 
         Course course = courseRepository.findById(event.getCourseId())
                 .orElseThrow(() -> new RuntimeException("Course not found: " + event.getCourseId()));
 
         CourseReservation reservation = new CourseReservation();
-        reservation.setStudent(student);
+        reservation.setUser(user);
         reservation.setCourse(course);
         reservationRepository.save(reservation);
 
-        System.out.println("✅ Reservation created for student " + student.getId() + ", course " + course.getId());
+        System.out.println("✅ Reservation created for student " + user.getId() + ", course " + course.getId());
     }
 
     private void handleReservationCancelled(CourseReservationEvent event) {
-        reservationRepository.findByStudentIdAndCourseId(event.getStudentId(), event.getCourseId())
+        reservationRepository.findByUserIdAndCourseId(event.getStudentId(), event.getCourseId())
                 .ifPresentOrElse(reservation -> {
                     // Check if the reservation is older than 30 days
                     if (reservation.getReservationTime().isBefore(LocalDateTime.now().minusDays(30))) {

@@ -2,7 +2,6 @@ package com.app.coursecenter.service;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-
 import com.app.coursecenter.service.CourseReservationService;
 
 public class ReserveCourseCommand implements Command {

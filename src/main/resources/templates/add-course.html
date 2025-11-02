@@ -1,80 +1,273 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>Add Course</title>
+    <title>Add New Course</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
     <style>
-        body { background-color: #f8f9fa; }
+        body {
+            background-color: #f8f9fa;
+            padding-top: 20px;
+        }
+
         .card {
             border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .course-image-preview {
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            display: none;
+            margin-bottom: 1rem;
+        }
+
+        /* Notification styles */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1100;
+            min-width: 300px;
+            max-width: 400px;
+            transform: translateX(150%);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .spinner-border {
+            width: 1.5rem;
+            height: 1.5rem;
+            margin-right: 0.5rem;
         }
     </style>
 </head>
-<body>
-<div class="container py-5">
+<body class="bg-light">
+
+<!-- Notification Container -->
+<div id="notification" class="notification">
+    <div class="alert alert-dismissible fade show" role="alert">
+        <span id="notificationMessage"></span>
+        <button type="button" class="btn-close" onclick="hideNotification()"></button>
+    </div>
+</div>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+    <div class="container-fluid">
+        <a class="navbar-brand" th:href="@{${@environment.getProperty('app.paths.frontend-base')} + ${@environment.getProperty('app.paths.course-base')}}">
+            <i class="bi bi-arrow-left"></i> Back to Courses
+        </a>
+        <div class="d-flex">
+            <button id="logoutBtn" class="btn btn-outline-danger btn-sm">
+                <i class="bi bi-box-arrow-right"></i> Logout
+            </button>
+        </div>
+    </div>
+</nav>
+
+<div class="container py-3">
     <div class="card mx-auto" style="max-width: 700px;">
-        <div class="card-body">
-            <h3 class="card-title mb-4 text-center fw-bold">Add New Course</h3>
+        <div class="card-body p-4">
+            <h2 class="card-title mb-4 text-center fw-bold">
+                <i class="bi bi-plus-circle me-2"></i>Add New Course
+            </h2>
 
-            <form th:action="@{/courses/add}" th:object="${course}" method="post" enctype="multipart/form-data">
-
+            <form id="courseForm" onsubmit="submitForm(event)">
                 <!-- Course Name -->
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Course Name</label>
-                    <input type="text" th:field="*{name}" class="form-control" placeholder="Enter course name" required>
+                <div class="mb-4">
+                    <label for="name" class="form-label fw-semibold">
+                        <i class="bi bi-book me-1"></i> Course Name
+                    </label>
+                    <input type="text" id="name" name="name" class="form-control form-control-lg"
+                           placeholder="Enter course name" required>
                 </div>
 
                 <!-- Description -->
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Description</label>
-                    <textarea th:field="*{description}" class="form-control" rows="3" placeholder="Describe the course"></textarea>
+                <div class="mb-4">
+                    <label for="description" class="form-label fw-semibold">
+                        <i class="bi bi-card-text me-1"></i> Description
+                    </label>
+                    <textarea id="description" name="description" class="form-control"
+                              rows="4" placeholder="Describe the course in detail" required></textarea>
                 </div>
 
-                <!-- Teacher -->
-                <div class="mb-3" th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
-                    <label class="form-label fw-semibold">Teacher</label>
-                    <select th:field="*{teacherId}" class="form-select" required>
-                        <option value="">Select Teacher</option>
-                        <option th:each="teacher : ${teachers}"
-                                th:value="${teacher.id}"
-                                th:text="${teacher.name}"></option>
-                    </select>
-                </div>
-
-                <!-- Duration -->
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Duration (hours)</label>
-                    <input type="number" th:field="*{duration}" class="form-control" placeholder="e.g. 40">
+                <!-- Credit Hours -->
+                <div class="mb-4">
+                    <label for="creditHours" class="form-label fw-semibold">
+                        <i class="bi bi-clock me-1"></i> Credit Hours
+                    </label>
+                    <input type="number" id="creditHours" name="creditHours" class="form-control"
+                           min="1" max="10" value="3" required>
+                    <div class="form-text">Number of credit hours for this course (1-4)</div>
                 </div>
 
                 <!-- Cost -->
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Cost ($)</label>
-                    <input type="number" step="0.01" th:field="*{cost}" class="form-control" placeholder="e.g. 99.99">
-                </div>
-
-                <!-- Rating -->
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Rating (1–5)</label>
-                    <input type="number" min="1" max="5" th:field="*{rating}" class="form-control" placeholder="Optional">
+                <div class="mb-4">
+                    <label for="cost" class="form-label fw-semibold">
+                        <i class="bi bi-currency-dollar me-1"></i> Price
+                    </label>
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-text">$</span>
+                        <input type="number" id="cost" name="cost" step="0.01" min="0"
+                               class="form-control" placeholder="e.g. 99.99" required>
+                    </div>
                 </div>
 
                 <!-- Image Upload -->
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Course Image</label>
-                    <input type="file" name="imageFile" class="form-control" accept="image/*">
+                <div class="mb-4">
+                    <label for="imageFile" class="form-label fw-semibold">
+                        <i class="bi bi-image me-1"></i> Course Image
+                    </label>
+                    <div class="border rounded p-3 text-center bg-light">
+                        <img id="imagePreview" class="img-fluid course-image-preview mb-3">
+                        <div class="d-flex flex-column align-items-center">
+                            <input type="file" id="imageFile" name="imageFile"
+                                   class="form-control d-none" accept="image/*" required
+                                   onchange="previewImage(this)">
+                            <button type="button" class="btn btn-outline-primary mb-2"
+                                    onclick="document.getElementById('imageFile').click()">
+                                <i class="bi bi-upload me-2"></i>Choose Image
+                            </button>
+                            <small class="text-muted">JPG, PNG or GIF (Max 5MB)</small>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="text-center">
-                    <button type="submit" class="btn btn-primary px-4">Save Course</button>
-                    <a href="/courses" class="btn btn-outline-secondary ms-2">Cancel</a>
+                <!-- Submit Buttons -->
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                    <button type="button" class="btn btn-outline-secondary me-md-2"
+                            onclick="window.location.href=FRONTEND_BASE + '/courses'">
+                        <i class="bi bi-x-circle me-1"></i> Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary px-4" id="submitBtn">
+                        <span class="spinner-border spinner-border-sm d-none" id="submitSpinner" role="status"></span>
+                        <i class="bi bi-save me-1"></i> Save Course
+                    </button>
                 </div>
-
             </form>
         </div>
     </div>
 </div>
+
+<script>
+  // Environment variables
+  const API_BASE = "[[${@environment.getProperty('app.paths.api-base')}]]";
+  const AUTH_BASE = "[[${@environment.getProperty('app.paths.auth-base')}]]";
+  const FRONTEND_BASE = "[[${@environment.getProperty('app.paths.frontend-base')}]]";
+  const COURSE_BASE = "[[${@environment.getProperty('app.paths.course-base')}]]";
+
+  const API_URL = `${API_BASE}${COURSE_BASE}`;
+
+  // DOM Elements
+  const courseForm = document.getElementById('courseForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const submitSpinner = document.getElementById('submitSpinner');
+  const notification = document.getElementById('notification');
+  const notificationMessage = document.getElementById('notificationMessage');
+  const alertBox = notification.querySelector('.alert');
+
+
+  // Show notification
+  function showNotification(message, type = 'success') {
+    notificationMessage.textContent = message;
+    alertBox.className = `alert alert-${type} alert-dismissible fade show`;
+    notification.classList.add('show');
+    setTimeout(hideNotification, 5000);
+  }
+
+  // Hide notification
+  function hideNotification() {
+    notification.classList.remove('show');
+  }
+
+
+  console.log(courseForm);
+
+  // Form submission handler
+  async function submitForm(event) {
+    event.preventDefault();
+
+    // Show loading state
+    submitBtn.disabled = true;
+    submitSpinner.classList.remove('d-none');
+
+    try {
+      const formData = new FormData(courseForm);
+      console.log(formData)
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        body: formData,
+        credentials: 'include'
+      });
+
+      const data = await response.json();
+      console.log(data)
+
+      if (response.ok) {
+        showNotification('Course created successfully!', 'success');
+        setTimeout(() => {
+          window.location.href = FRONTEND_BASE + `${COURSE_BASE}`;
+        }, 1500);
+      } else {
+        console.log(data)
+        throw new Error(data.message || 'Failed to create course');
+      }
+
+    } catch (error) {
+
+      console.error('Error:', error);
+      showNotification(error.message || 'An error occurred while creating the course', 'danger');
+    } finally {
+      submitBtn.disabled = false;
+      submitSpinner.classList.add('d-none');
+    }
+  }
+
+  // Logout functionality
+  document.getElementById("logoutBtn").addEventListener("click", async () => {
+    if (confirm("Are you sure you want to log out?")) {
+      try {
+        const response = await fetch(`${API_BASE}${AUTH_BASE}/logout`, {
+          method: "POST",
+          credentials: "include"
+        });
+
+        if (response.ok) {
+          window.location.href = FRONTEND_BASE + "/login";
+        } else {
+          throw new Error("Logout failed");
+        }
+      } catch (error) {
+        showNotification("Logout failed. Please try again.", "danger");
+      }
+    }
+  });
+
+
+  // Image preview functionality
+  function previewImage(input) {
+    const preview = document.getElementById('imagePreview');
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+      }
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+</script>
 </body>
 </html>

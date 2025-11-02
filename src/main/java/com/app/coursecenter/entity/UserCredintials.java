@@ -5,43 +5,43 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
-public class StudentDetails implements UserDetails {
+public class UserCredintials implements UserDetails {
 
-    private final Student student;
+    private final User user;
 
-    public StudentDetails(Student student) {
-        this.student = student;
+    public UserCredintials(User user) {
+        this.user = user;
     }
 
-    public Student getStudent() {
-        return student;
+    public User getUser() {
+        return user;
     }
 
     public Long getId() {
-        return student.getId();
+        return user.getId();
     }
 
     public String getEmail() {
-        return student.getEmail();
+        return user.getEmail();
     }
 
     public String getFullName() {
-        return student.getFirstName() + " " + student.getLastName();
+        return user.getFirstName() + " " + user.getLastName();
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return student.getAuthorities();
+        return user.getAuthorities();
     }
 
     @Override
     public String getPassword() {
-        return student.getPassword();
+        return user.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return student.getEmail();
+        return user.getEmail();
     }
 
     @Override

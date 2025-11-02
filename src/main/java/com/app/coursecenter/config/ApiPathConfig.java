@@ -1,6 +1,5 @@
 package com.app.coursecenter.config;
 
-
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -25,6 +24,7 @@ public class ApiPathConfig {
             "/swagger-ui/**",
             "/v3/api-docs/**",
             "/swagger-resources/**",
+            "/uploads/**",
             "/webjars/**",
             "/docs",
             "/error"
@@ -54,6 +54,12 @@ public class ApiPathConfig {
     private String studentBase = "/student";
     private String teacherBase = "/teacher";
 
+    // Course-related paths
+    private String courseBase = "/course";
+
+    private String[] publicCourseFrontPaths = {"", "/{id}"};
+    private String[] publicCourseApiPaths = {"", "/{id}", "/{id}/average-rate"}; // NEW: Public course API endpoints
+    private String[] adminCoursePaths = {"/add"};
 
     // Helper methods to build full paths
     public String[] getPublicApiPaths() {
@@ -90,12 +96,44 @@ public class ApiPathConfig {
         return frontendBase + "/**";
     }
 
+    // Helper methods for course paths
+    public String[] getPublicCourseFrontPaths() {
+        return Stream.of(publicCourseFrontPaths)
+                .map(path -> frontendBase + courseBase + path)
+                .toArray(String[]::new);
+    }
+
+    public String[] getPublicCourseApiPaths() {
+        return Stream.of(publicCourseApiPaths)
+                .map(path -> apiBase + courseBase + path)
+                .toArray(String[]::new);
+    }
+
+    public String[] getAdminCourseApiPaths() {
+        return adminCoursePaths;
+
+    }
+
+    public String[] getAdminCourseFrontendPaths() {
+        return Stream.of(adminCoursePaths)
+                .map(path -> frontendBase + courseBase + path)
+                .toArray(String[]::new);
+    }
 
     public String[] getAllPublicPaths() {
         return Stream.concat(
-                Arrays.stream(publicPaths),
-                Arrays.stream(getPublicApiPaths())
+                Stream.concat(
+                        Stream.concat(
+                                Arrays.stream(publicPaths),
+                                Arrays.stream(getPublicApiPaths())
+                        ),
+                        Arrays.stream(getPublicCourseFrontPaths())
+                ),
+                Arrays.stream(getPublicCourseApiPaths()) // NEW: Include public course API paths
         ).toArray(String[]::new);
     }
 
+    public String getHomePage() {
+        return frontendBase + courseBase;
+    }
 }

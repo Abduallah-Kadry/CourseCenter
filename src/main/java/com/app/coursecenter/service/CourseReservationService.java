@@ -1,13 +1,8 @@
 package com.app.coursecenter.service;
 
-import com.app.coursecenter.dto.CourseRatedEvent;
 import com.app.coursecenter.dto.CourseReservationEvent;
-import com.app.coursecenter.repository.CourseReservationRepository;
-import com.app.coursecenter.util.FindAuthenticatedStudent;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-
-import java.nio.file.AccessDeniedException;
 
 @Service
 public class CourseReservationService {

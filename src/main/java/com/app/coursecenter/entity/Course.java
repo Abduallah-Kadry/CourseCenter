@@ -23,6 +23,8 @@ public class Course extends BaseEntity {
     @Column(name = "credit_hours", nullable = false, columnDefinition = "INT CHECK (credit_hours BETWEEN 1 AND 4)")
     private Integer creditHours;
 
+
+
     @Version
     private int version;
 }

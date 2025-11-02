@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @EnableJpaAuditing(auditorAwareRef = "auditAwareImpl")
 @OpenAPIDefinition(
         info = @Info(
-                title = "Student REST API Documentation",
+                title = "User REST API Documentation",
                 description = "REST API Documentation",
                 version = "v1",
                 contact = @Contact(

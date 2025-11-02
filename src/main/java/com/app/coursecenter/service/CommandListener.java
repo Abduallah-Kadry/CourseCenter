@@ -17,6 +17,7 @@ public class CommandListener {
         this.reservationService = reservationService;
     }
 
+
     @KafkaListener(topics = "course-reservation-commands", groupId = "reservation-service")
     public void handleCommand(String message) throws Exception {
         JsonNode node = objectMapper.readTree(message);
@@ -31,5 +32,6 @@ public class CommandListener {
         };
         command.execute();
     }
+
 }
 

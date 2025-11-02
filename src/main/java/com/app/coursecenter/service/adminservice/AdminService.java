@@ -1,15 +1,15 @@
 package com.app.coursecenter.service.adminservice;
 
-import com.app.coursecenter.dto.StudentDto;
+import com.app.coursecenter.dto.UserDto;
 import org.springframework.data.domain.Page;
 
 
 
 public interface AdminService {
 
-    Page<StudentDto> getAllStudents(int page, int size);
+    Page<UserDto> getAllUser(int page, int size);
 
-    StudentDto promoteToAdmin(long studentId);
+    UserDto promoteToAdmin(long studentId);
 
     void deleteNonAdminUser(long id);
 }

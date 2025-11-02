@@ -15,12 +15,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/course")
+@RequestMapping("${app.paths.api-base}${app.paths.course-base}")
 @RequiredArgsConstructor
 // the student should gets it's enrolled courses
-// the stuednt should request to be added to the course
 // the student should not register in more than 3 courses
-
 
 public class CourseController {
 
@@ -35,7 +33,8 @@ public class CourseController {
 
 
     @PostMapping("")
-    public ResponseEntity<ApiRespond> createCourse(@Valid @RequestBody CreateCourseRequest course) {
+    public ResponseEntity<ApiRespond> createCourse(@Valid @ModelAttribute CreateCourseRequest course) {
+
         return ResponseEntity.ok(new ApiRespond(HttpStatus.OK,
                 "course added successfully", courseService.addCourse(course)));
 
@@ -47,6 +46,7 @@ public class CourseController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
 
+        System.out.println("do you reach me here ?");
         Page<CourseResponse> courses = courseService.getAllCourses(page, size);
         return ResponseEntity.ok(new ApiRespond(HttpStatus.OK, "All Courses", courses));
 
@@ -58,14 +58,12 @@ public class CourseController {
                 "course updated successfully", courseService.updateCourse(id, course)));
     }
 
-    @GetMapping("/id")
-    public ResponseEntity<CourseResponse> getCourseById(@RequestParam("id") long id) {
-        try {
-            //
-            return ResponseEntity.ok(courseService.getCourseById(id));
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiRespond> getCourseById(@PathVariable long id) {
+
+        return ResponseEntity.ok(new ApiRespond(HttpStatus.OK,
+                "course updated successfully", courseService.getCourseById(id)));
+
     }
 
 }

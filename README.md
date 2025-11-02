@@ -3,7 +3,7 @@ Last-Modified: 2025-09-05 00:30
 ---
 ## CourseCenter App
 
-- full student with the password
+- full user with the password
 - full api with api response entity for the 5 crud normal operations
  -  documented through **swagger**
 - pagination 

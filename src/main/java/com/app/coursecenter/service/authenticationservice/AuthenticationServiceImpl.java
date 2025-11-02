@@ -1,10 +1,10 @@
 package com.app.coursecenter.service.authenticationservice;
 
 import com.app.coursecenter.entity.Authority;
-import com.app.coursecenter.entity.Student;
-import com.app.coursecenter.entity.StudentDetails;
+import com.app.coursecenter.entity.User;
+import com.app.coursecenter.entity.UserCredintials;
 import com.app.coursecenter.exception.InvalidCredentialException;
-import com.app.coursecenter.repository.StudentRepository;
+import com.app.coursecenter.repository.UserRepository;
 import com.app.coursecenter.request.AuthenticationRequest;
 import com.app.coursecenter.request.RegisterRequest;
 import com.app.coursecenter.response.AuthenticationResponse;
@@ -21,13 +21,13 @@ import java.util.List;
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
 
-    private final StudentRepository studentRepository;
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
 
-    public AuthenticationServiceImpl(StudentRepository studentRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtService jwtService) {
-        this.studentRepository = studentRepository;
+    public AuthenticationServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtService jwtService) {
+        this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
@@ -39,8 +39,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if (isEmailTaken(input.getEmail())) {
             throw new RuntimeException("Email already taken");
         }
-        Student student = buildNewUser(input);
-        studentRepository.save(student);
+        User user = buildNewUser(input);
+        userRepository.save(user);
     }
 
     @Override
@@ -49,13 +49,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-            Student student = studentRepository.findByEmail(request.getEmail())
+
+            User user = userRepository.findByEmail(request.getEmail())
                     .orElseThrow(() -> new InvalidCredentialException("Invalid email or password"));
 
             // ✅ Wrap Student in StudentDetails
-            StudentDetails studentDetails = new StudentDetails(student);
+            UserCredintials userCredintials = new UserCredintials(user);
 
-            String jwtToken = jwtService.generateToken(new HashMap<>(), studentDetails);
+            String jwtToken = jwtService.generateToken(new HashMap<>(),userCredintials);
             return new AuthenticationResponse(jwtToken);
 
         } catch (Exception e) {
@@ -65,22 +66,21 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     private boolean isEmailTaken(String email) {
-        return studentRepository.findByEmail(email).isPresent();
+        return userRepository.findByEmail(email).isPresent();
     }
 
-    private Student buildNewUser(RegisterRequest input) {
-        Student student = new Student();
-        student.setId(0L);
-        student.setFirstName(input.getFirstName());
-        student.setLastName(input.getLastName());
-        student.setEmail(input.getEmail());
-        student.setPassword(passwordEncoder.encode(input.getPassword()));
-        student.setAuthorities(initialAuthority());
-        return student;
+    private User buildNewUser(RegisterRequest input) {
+        User user = new User();
+        user.setFirstName(input.getFirstName());
+        user.setLastName(input.getLastName());
+        user.setEmail(input.getEmail());
+        user.setPassword(passwordEncoder.encode(input.getPassword()));
+        user.setAuthorities(initialAuthority());
+        return user;
     }
 
     private List<Authority> initialAuthority() {
-        boolean isFirstUser = studentRepository.count() == 0;
+        boolean isFirstUser = userRepository.count() == 0;
         List<Authority> authorities = new ArrayList<>();
         authorities.add(new Authority("ROLE_STUDENT"));
         if (isFirstUser) {

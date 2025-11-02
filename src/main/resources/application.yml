@@ -4,3 +4,9 @@ server:
 spring:
   profiles:
     active: "dev" # dev, prod
+
+  devtools:
+    restart:
+      enabled: true
+      poll-interval: 10s       # check every 10 seconds
+      quiet-period: 7s         # wait 5 seconds after last change before restart

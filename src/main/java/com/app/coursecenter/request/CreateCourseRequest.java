@@ -1,6 +1,7 @@
 package com.app.coursecenter.request;
 
 
+import com.app.coursecenter.Annotaions.ValidImageFile;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,14 +18,19 @@ public class CreateCourseRequest {
     private String description;
 
     @NotNull(message = "Credit Hours is mandatory")
-    @Min(value= 1, message = "Credit Hours must be at least 1 hour")
-    @Max(value= 4, message = "Credit Hours must be at most 4 hour")
+    @Min(value = 1, message = "Credit Hours must be at least 1 hour")
+    @Max(value = 4, message = "Credit Hours must be at most 4 hour")
     private Integer creditHours;
+
+
+    @NotNull(message = "Image is required")
+    @ValidImageFile
+    private MultipartFile imageFile;
 
     private String imageUrl;
 
     @NotNull(message = "Cost is mandatory")
-    @Min(value = 0,message = "Cost must equal or be more than zero")
+    @Min(value = 0, message = "Cost must equal or be more than zero")
     private Double cost;
 
 }

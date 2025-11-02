@@ -98,6 +98,7 @@ services:
 
 
 
+
 # another spring boot app that runs the notification service
   notification-service:
     image: notification-service

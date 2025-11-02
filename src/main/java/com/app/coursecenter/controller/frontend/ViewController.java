@@ -21,7 +21,7 @@ public class ViewController {
 
     @GetMapping("")
     public String home() {
-        return "index";
+        return "courses";
     }
 
     @GetMapping("/login")
@@ -36,22 +36,7 @@ public class ViewController {
 
     // Add more view mappings as needed
 
-    @GetMapping("/courses")
-    public String courses(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            Model model) {
 
-        // Fetch paginated courses from the service
-        Page<CourseResponse> coursePage = courseService.getAllCourses(page, size);
 
-        // Add attributes to the model
-        model.addAttribute("courses", coursePage.getContent()); // list of courses
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", coursePage.getTotalPages());
-        model.addAttribute("totalElements", coursePage.getTotalElements());
-        model.addAttribute("pageSize", size);
 
-        return "courses"; // thymeleaf template name (courses.html)
-    }
 }

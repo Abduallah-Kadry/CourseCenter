@@ -1,10 +1,8 @@
 package com.app.coursecenter.service;
 
-import com.app.coursecenter.entity.Course;
 import com.app.coursecenter.repository.CourseReservationRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 
 @Service
 public class CourseRatingService {
@@ -31,8 +29,6 @@ public class CourseRatingService {
         if (rate < 1 || rate > 5) {
             throw new IllegalArgumentException("Rate must be between 1 and 5.");
         }
-
-        System.out.println("🎯 Processing rating request for courseId=" + courseId);
 
         // Send event to Kafka
         courseRatingProducer.sendCourseRatingCommand(studentId, studentEmail, courseId, rate);

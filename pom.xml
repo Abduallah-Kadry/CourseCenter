@@ -94,10 +94,7 @@
         </dependency>
 
         <!-- Thymeleaf Layout Dialect -->
-        <dependency>
-            <groupId>nz.net.ultraq.thymeleaf</groupId>
-            <artifactId>thymeleaf-layout-dialect</artifactId>
-        </dependency>
+
 
         <!-- DevTools -->
         <dependency>
@@ -135,6 +132,15 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.thymeleaf.extras</groupId>
+            <artifactId>thymeleaf-extras-springsecurity6</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>nz.net.ultraq.thymeleaf</groupId>
+            <artifactId>thymeleaf-layout-dialect</artifactId>
         </dependency>
 
     </dependencies>
@@ -192,7 +198,7 @@
             </plugin>
             <plugin>
 
-            <!-- build the image without having to use docker file (select only the important deps to run the project -->
+                <!-- build the image without having to use docker file (select only the important deps to run the project -->
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
                 <version>3.4.2</version>

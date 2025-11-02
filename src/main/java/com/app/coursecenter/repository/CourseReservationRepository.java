@@ -11,11 +11,11 @@ import java.util.Optional;
 
 public interface CourseReservationRepository extends JpaRepository<CourseReservation, Long> {
 
-    Optional<CourseReservation> findByStudentIdAndCourseId(Long studentId, Long courseId);
+    Optional<CourseReservation> findByUserIdAndCourseId(Long userId, Long courseId);
 
     @Query("SELECT AVG(r.courseRate) FROM CourseReservation r WHERE r.course.id = :courseId")
     Double findAverageRateByCourseId(@Param("courseId") Long courseId);
 
-    @Query("SELECT r.course FROM CourseReservation r WHERE r.student.id = :studentId")
-    List<Course> findCoursesByStudentId(@Param("studentId") Long studentId);
+    @Query("SELECT r.course FROM CourseReservation r WHERE r.user.id = :userId")
+    List<Course> findCoursesByUserId(@Param("userId") Long userId);
 }

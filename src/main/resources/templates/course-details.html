@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .course-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .rating {
+            color: #f1c40f;
+            margin: 10px 0;
+        }
+
+        .price {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #0d6efd;
+        }
+
+        .enroll-btn {
+            font-size: 1.2rem;
+            padding: 12px 30px;
+            font-weight: 600;
+        }
+
+        .course-content {
+            margin-top: 40px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .back-to-courses {
+            margin-bottom: 30px;
+        }
+
+        .star {
+            color: #f1c40f;
+        }
+
+        #loadingSpinner {
+            display: none;
+            text-align: center;
+            padding: 50px 0;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <a class="navbar-brand"
+           th:href="@{${@environment.getProperty('app.paths.frontend-base')} + ${@environment.getProperty('app.paths.course-base')}}">CourseCenter</a>
+
+         <a sec:authorize="!isAuthenticated()"
+               th:href="@{|${@environment.getProperty('app.paths.frontend-base')}/login|}"
+               class="btn btn-primary btn-sm me-2">
+                <i class="bi me-1"></i> Login
+            </a>
+        <div class="d-flex" sec:authorize="isAuthenticated()">
+            <button id="logoutBtn" class="btn btn-outline-danger">Logout</button>
+        </div>
+    </div>
+</nav>
+
+<div class="container my-5">
+    <div id="loadingSpinner">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2">Loading course details...</p>
+    </div>
+
+    <a href="#" onclick="window.history.back()" class="btn btn-outline-secondary back-to-courses">
+        <i class="fas fa-arrow-left me-2"></i>Back to Courses
+    </a>
+
+    <div id="courseDetails" class="row">
+        <!-- Course details will be dynamically inserted here -->
+    </div>
+</div>
+
+<script>
+  const API_BASE = "[[${@environment.getProperty('app.paths.api-base')}]]";
+  const AUTH_BASE = "[[${@environment.getProperty('app.paths.auth-base')}]]";
+  const FRONTEND_BASE = "[[${@environment.getProperty('app.paths.frontend-base')}]]";
+  const COURSE_BASE = "[[${@environment.getProperty('app.paths.course-base')}]]";
+
+  // Get course ID from URL
+  const courseId = window.location.pathname.split('/').pop();
+
+  // DOM Elements
+  const courseDetails = document.getElementById('courseDetails');
+  const loadingSpinner = document.getElementById('loadingSpinner');
+
+  // Fetch course details when page loads
+  document.addEventListener('DOMContentLoaded', () => {
+    loadCourseDetails();
+    setupEventListeners();
+  });
+
+  async function loadCourseDetails() {
+    showLoading(true);
+    try {
+      const response = await fetch(`${API_BASE}${COURSE_BASE}/${courseId}`, {
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch course details');
+      }
+
+      const data = await response.json();
+
+      const course = data.data;
+
+      // Fetch the average rating
+      course.averageRating = await getAverageRating(courseId);
+      console.log('Course details:', data);
+
+      if (data.data) {
+        renderCourseDetails(data.data);
+      } else {
+        throw new Error('Invalid course data received');
+      }
+    } catch (error) {
+      console.error('Error loading course details:', error);
+      showError('Failed to load course details. Please try again later.');
+    } finally {
+      showLoading(false);
+    }
+  }
+
+  async function getAverageRating(courseId) {
+    try {
+      const response = await fetch(`${API_BASE}${COURSE_BASE}/${courseId}/average-rate`);
+      if (!response.ok) {
+        console.error('Failed to fetch average rating for course', courseId);
+        return 0;
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching average rating:', error);
+      return 0;
+    }
+  }
+
+
+  function renderCourseDetails(course) {
+    const ratingStars = Array(5).fill().map((_, i) =>
+      `<i class="${i < Math.round(course.averageRating || 0) ? 'fas fa-star star' : 'far fa-star'}"></i>`
+    ).join('');
+
+
+    const courseHtml = `
+                <div class="col-lg-8">
+                    <img src="${course.imageUrl || 'https://via.placeholder.com/800x400'}"
+                         class="course-image mb-4"
+                         alt="${course.name || 'Course Image'}"
+                         onerror="this.onerror=null; this.src='https://via.placeholder.com/800x400'">
+
+                    <h1>${course.name || 'Untitled Course'}</h1>
+
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="rating me-3">
+                            ${ratingStars}
+                        </div>
+                        <span class="text-muted">${course.averageRating ? course.averageRating.toFixed(1) : 'N/A'}</span>
+                    </div>
+
+                    <div class="course-content">
+                        <h3>About This Course</h3>
+                        <p class="lead">${course.description || 'No description available.'}</p>
+
+                        <div class="mt-4">
+                            <h4>What You'll Learn</h4>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>Comprehensive course materials</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Hands-on exercises</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Certificate of completion</li>
+                                <li><i class="fas fa-check text-success me-2"></i>24/7 support</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="price mb-3">
+                                $${course.cost ? parseFloat(course.cost).toFixed(2) : '0.00'}
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-primary btn-lg enroll-btn">
+                                    Enroll Now
+                                </button>
+                            </div>
+
+                            <hr>
+
+                            <div class="mb-3">
+                                <h5>Course Details</h5>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">
+                                        <i class="far fa-clock me-2 text-muted"></i>
+                                        <span>Duration: ${course.creditHours || 0} hours</span>
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-layer-group me-2 text-muted"></i>
+                                        <span>Level: All Levels</span>
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-language me-2 text-muted"></i>
+                                        <span>Language: English</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+    courseDetails.innerHTML = courseHtml;
+  }
+
+  function setupEventListeners() {
+    // Logout button
+    document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+  }
+
+  async function handleLogout(e) {
+    e.preventDefault();
+    if (confirm("Are you sure you want to log out?")) {
+      try {
+        const response = await fetch(`${API_BASE}${AUTH_BASE}/logout`, {
+          method: "POST",
+          credentials: "include"
+        });
+
+        if (response.ok) {
+          window.location.href = FRONTEND_BASE + "/login";
+        } else {
+          alert("Logout failed. Please try again.");
+        }
+      } catch (error) {
+        console.error("Error during logout:", error);
+        alert("An error occurred during logout.");
+      }
+    }
+  }
+
+  function showLoading(show) {
+    if (loadingSpinner) loadingSpinner.style.display = show ? 'block' : 'none';
+    if (courseDetails) courseDetails.style.visibility = show ? 'hidden' : 'visible';
+  }
+
+  function showError(message) {
+    courseDetails.innerHTML = `
+                <div class="alert alert-danger" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    ${message}
+                    <button class="btn btn-link p-0 ms-2" onclick="loadCourseDetails()">
+                        <i class="fas fa-sync-alt"></i> Try Again
+                    </button>
+                </div>
+            `;
+  }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

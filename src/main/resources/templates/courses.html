@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>Courses</title>
+    <title>Available Courses</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .course-card {
             transition: transform 0.2s ease, box-shadow 0.2s ease;
             cursor: pointer;
+            height: 100%;
         }
 
         .course-card:hover {
@@ -25,85 +27,279 @@
         .star {
             color: #f1c40f;
         }
+
+        #loadingSpinner {
+            display: none;
+        }
+
+        .pagination {
+            justify-content: center;
+            margin-top: 2rem;
+        }
     </style>
 </head>
 <body class="bg-light">
-
-<nav class="navbar navbar-expand-lg navbar-light bg-light" sec>
+<nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
     <div class="container-fluid">
-        <!--        <a class="navbar-brand" th:href="@{/frontend/dashboard}">CourseCenter</a>-->
+        <a class="navbar-brand" href="#">CourseCenter</a>
         <div class="d-flex">
-            <button id="logoutBtn" class="btn btn-outline-danger btn-sm">Logout</button>
+            <a sec:authorize="hasRole('ROLE_ADMIN')"
+               th:href="@{|${@environment.getProperty('app.paths.frontend-base')}${@environment.getProperty('app.paths.course-base')}/add|}"
+               class="btn btn-primary btn-sm me-2">
+                <i class="bi bi-plus-circle me-1"></i> Add Course
+            </a>
+             <a sec:authorize="!isAuthenticated()"
+               th:href="@{|${@environment.getProperty('app.paths.frontend-base')}/login|}"
+               class="btn btn-primary btn-sm me-2">
+                <i class="bi me-1"></i> Login
+            </a>
+            <button sec:authorize="isAuthenticated()"
+                    id="logoutBtn"
+                    class="btn btn-outline-danger btn-sm">
+                <i class="bi bi-box-arrow-right"></i> Logout
+            </button>
         </div>
     </div>
+
 </nav>
 
-<div class="container py-5">
+<div class="container py-4">
     <h2 class="mb-4 text-center fw-bold">Available Courses</h2>
 
-    <div class="row g-4">
-        <!-- Loop over courses -->
-
-        <div th:if="${courses.isEmpty()}"> There is no courses yet</div>
-        <div class="col-md-4 col-lg-3" th:each="course : ${courses}">
-            <div class="card course-card h-100">
-                <!--  todo add image field to the course-->
-                <img th:src="${course.imageUrl}" class="card-img-top course-image" th:alt="${course.name}">
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title" th:text="${course.name}">Course Name</h5>
-
-
-                    <!-- Rating -->
-                    <div class="mb-2">
-                        <span th:each="i : ${#numbers.sequence(1,5)}"
-
-                              th:classappend="${i <= course.rate} ? 'star' : ''">★</span>
-                    </div>
-
-                    <!-- Cost -->
-
-                    <p class="fw-semibold text-primary mb-3" th:text="'$' + ${course.cost}">$100</p>
-
-<!--                    <div class="mt-auto">-->
-<!--                        <a th:href="@{'/courses/' + ${course.id}}" class="btn btn-outline-primary w-100">-->
-<!--                            View Details-->
-<!--                        </a>-->
-<!--                    </div>-->
-                </div>
-            </div>
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="text-center my-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
         </div>
-        <!-- End loop -->
+        <p class="mt-2">Loading courses...</p>
     </div>
+
+    <!-- Courses Grid -->
+    <div id="coursesGrid" class="row g-4">
+        <!-- Will be populated by JavaScript -->
+    </div>
+
+    <!-- Pagination -->
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul id="pagination" class="pagination justify-content-center">
+            <!-- Will be populated by JavaScript -->
+        </ul>
+    </nav>
 </div>
 
-
 <script>
-
-
+  // Environment variables
   const API_BASE = "[[${@environment.getProperty('app.paths.api-base')}]]";
   const AUTH_BASE = "[[${@environment.getProperty('app.paths.auth-base')}]]";
   const FRONTEND_BASE = "[[${@environment.getProperty('app.paths.frontend-base')}]]";
-  document.getElementById("logoutBtn").addEventListener("click", async () => {
+  const COURSE_BASE = "[[${@environment.getProperty('app.paths.course-base')}]]";
+  const API_URL = `${API_BASE}${COURSE_BASE}`;
 
-    if (confirm("Are you sure you want to log out?")) {
-      const response = await fetch(`${API_BASE}${AUTH_BASE}/logout`, {
-        method: "POST",
-        credentials: "include" // IMPORTANT: ensures cookies are sent
-      });
+  // State
+  let currentPage = 0;
+  const pageSize = 8; // Number of items per page
+  let totalPages = 0;
 
-      if (response.ok) {
-        // Redirect to login page after clearing cookie
-        window.location.href = FRONTEND_BASE + "/login";
-      } else {
-        alert("Logout failed. Try again.");
-      }
-    }
+  // DOM Elements
+  const coursesGrid = document.getElementById('coursesGrid');
+  const pagination = document.getElementById('pagination');
+  const loadingSpinner = document.getElementById('loadingSpinner');
 
-
+  // Initialize the page
+  document.addEventListener('DOMContentLoaded', () => {
+    loadCourses(currentPage, pageSize);
+    setupEventListeners();
   });
 
+  // Setup event listeners
+  function setupEventListeners() {
+    // Logout button
+    document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+  }
 
+  // Load courses with pagination
+  async function loadCourses(page, size) {
+    try {
+      showLoading(true);
+      const response = await fetch(`${API_URL}?page=${page}&size=${size}`, {
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch courses');
+      }
+      console.log(response)
+      const data = await response.json();
+
+      totalPages = data.data.totalPages || 1;
+      const courses = data.data.content;
+      console.log(courses)
+
+      renderCourses(courses);
+      renderPagination();
+    } catch (error) {
+      console.error('Error loading courses:', error);
+      showNotification('Failed to load courses. Please try again.', 'danger');
+    } finally {
+      showLoading(false);
+    }
+  }
+
+
+  async function getAverageRating(courseId) {
+    try {
+      const response = await fetch(`${API_BASE}${COURSE_BASE}/${courseId}/average-rate`);
+      if (!response.ok) {
+        console.error('Failed to fetch average rating for course', courseId);
+        return 0;
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching average rating:', error);
+      return 0;
+    }
+  }
+
+  // Render courses grid
+
+  async function renderCourses(courses) {
+    if (!courses || courses.length === 0) {
+      coursesGrid.innerHTML = `
+            <div class="col-12 text-center py-5">
+                <i class="bi bi-inbox" style="font-size: 3rem; opacity: 0.5;"></i>
+                <h4 class="mt-3">No courses found</h4>
+                <p class="text-muted">Add a new course to get started</p>
+            </div>`;
+      return;
+    }
+
+    // Show loading state
+    coursesGrid.innerHTML = '<div class="col-12 text-center py-5">Loading courses...</div>';
+
+    try {
+      // Fetch ratings for all courses in parallel
+      const coursesWithRatings = await Promise.all(courses.map(async course => {
+        const averageRating = await getAverageRating(course.id);
+        return {...course, averageRating};
+      }));
+
+
+      // Render courses with their ratings
+      coursesGrid.innerHTML = coursesWithRatings.map(course => `
+             <div class="col-md-4 col-lg-3 mb-4">
+                <div class="card course-card h-100">
+                    <img src="${course.imageUrl}"
+                         class="card-img-top course-image"
+                         alt="${course.name}"
+                       >
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">${course.name || 'Untitled Course'}</h5>
+                        <div class="mb-2">
+                            ${Array(5).fill().map((_, i) =>
+        `<span class="${i < Math.round(course.averageRating || 0) ? 'fas fa-star star' : 'far fa-star'}"></span>`
+      ).join('')}
+                            <small class="text-muted ms-2">(${course.averageRating ? course.averageRating.toFixed(1) : 'N/A'})</small>
+                        </div>
+
+                        <div class="mt-auto">
+                            <a href="${FRONTEND_BASE}${COURSE_BASE}/${course.id}"
+                               class="btn btn-outline-primary w-100">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+    } catch (error) {
+      console.error('Error rendering courses:', error);
+      coursesGrid.innerHTML = `
+            <div class="col-12 text-center py-5">
+                <i class="bi bi-exclamation-triangle text-danger" style="font-size: 3rem;"></i>
+                <h4 class="mt-3">Failed to load course ratings</h4>
+                <p class="text-muted">Please try refreshing the page</p>
+            </div>`;
+    }
+  }
+
+  // Render pagination controls
+  function renderPagination() {
+    if (totalPages <= 1) {
+      pagination.style.display = 'none';
+      return;
+    }
+
+    let paginationHTML = `
+            <li class="page-item ${currentPage === 0 ? 'disabled' : ''}">
+                <a class="page-link" href="#" data-page="${currentPage - 1}">Previous</a>
+            </li>`;
+
+    for (let i = 0; i < totalPages; i++) {
+      paginationHTML += `
+                <li class="page-item ${i === currentPage ? 'active' : ''}">
+                    <a class="page-link" href="#" data-page="${i}">${i + 1}</a>
+                </li>`;
+    }
+
+    paginationHTML += `
+            <li class="page-item ${currentPage >= totalPages - 1 ? 'disabled' : ''}">
+                <a class="page-link" href="#" data-page="${currentPage + 1}">Next</a>
+            </li>`;
+
+    pagination.innerHTML = paginationHTML;
+    pagination.style.display = 'flex';
+
+    // Add click event listeners to pagination links
+    document.querySelectorAll('.page-link[data-page]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const page = parseInt(link.dataset.page, 10);
+        if (!isNaN(page) && page >= 0 && page < totalPages && page !== currentPage) {
+          currentPage = page;
+          loadCourses(currentPage, pageSize);
+          window.scrollTo(0, 0);
+        }
+      });
+    });
+  }
+
+  // Show/hide loading spinner
+  function showLoading(show) {
+    if (loadingSpinner) loadingSpinner.style.display = show ? 'block' : 'none';
+    if (coursesGrid) coursesGrid.style.visibility = show ? 'hidden' : 'visible';
+  }
+
+  // Show notification
+  function showNotification(message, type = 'success') {
+    console.log(`[${type}] ${message}`);
+    // Simple alert for now, can be replaced with a toast notification
+    alert(`${type.toUpperCase()}: ${message}`);
+  }
+
+  // Handle logout
+  async function handleLogout(e) {
+    e.preventDefault();
+    if (confirm("Are you sure you want to log out?")) {
+      try {
+        const response = await fetch(`${API_BASE}${AUTH_BASE}/logout`, {
+          method: "POST",
+          credentials: "include"
+        });
+
+        if (response.ok) {
+          window.location.href = FRONTEND_BASE + "/login";
+        } else {
+          throw new Error("Logout failed");
+        }
+      } catch (error) {
+        showNotification("Logout failed. Please try again.", "danger");
+      }
+    }
+  }
 </script>
+
+<!-- Bootstrap JS Bundle with Popper -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

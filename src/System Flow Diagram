@@ -54,7 +54,7 @@ curl http://localhost:8083/connectors
 curl -X POST -H "Content-Type: application/json" --data "@src\connectors\course-reservation-sink.json" http://localhost:8083/connectors
 curl http://localhost:8083/connectors/course-reservation-sink/status
 
-http://localhost:8080/api/students/1/courses/1/reserve
+http://localhost:8080/api/users/1/courses/1/reserve
 
 docker run -d ^
   -e MYSQL_ROOT_PASSWORD=secret ^
@@ -65,7 +65,7 @@ docker run -d ^
 
 
 curl -H "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhaXNhbGVoQGVqYWRhLmNvbSIsImlhdCI6MTc2MDU1NjcxMywiZXhwIjoxNzYwNTU3NjEzfQ.vhF8mlxNP3dhu6Uh3EQQT37WCewpUBKpsCo1tRLk46w" \
-     "http://localhost:8080/api/students/reserve?studentId=1&courseId=1"
+     "http://localhost:8080/api/users/reserve?studentId=1&courseId=1"
 
 +---------------------------------------------------------------+
 |                         CourseCenter                          |
@@ -84,7 +84,7 @@ curl -H "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhaXNhbGVoQGVqYWRh
              +----------------------+
 
 macro (system-level) to micro (internal design)
-Reservation Service → emits event → Kafka → Notification Service → sends message to student
+Reservation Service → emits event → Kafka → Notification Service → sends message to user
 -----------------------------------------------------------------------------------------------------
 Why It’s Powerful
 Loose coupling:
@@ -149,5 +149,5 @@ Step	Component	Action
 2	Reservation Service	Saves to DB and emits ReservationCreatedEvent
 3	Kafka	Stores the event in topic
 4	Notification Service	Listens and consumes the event
-5	Notification Service	Sends email to student
+5	Notification Service	Sends email to user
 6	(Optional) UI	Displays “Reservation Successful” + sends confirmation email

@@ -1,8 +1,6 @@
 package com.app.coursecenter.controller.frontend;
 
-import com.app.coursecenter.entity.Student;
-import com.app.coursecenter.service.authenticationservice.AuthenticationService;
-import com.app.coursecenter.service.studentservice.StudentService;
+import com.app.coursecenter.entity.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
@@ -26,7 +24,6 @@ public class DashBoardController {
                 .map(GrantedAuthority::getAuthority)
                 .toString();
 
-
         // Redirect based on role
         switch (role) {
             case "ROLE_ADMIN":
@@ -47,7 +44,7 @@ public class DashBoardController {
             return "redirect:/login";
         }
 
-        Student admin = (Student) authentication.getPrincipal();
+        User admin = (User) authentication.getPrincipal();
 
         model.addAttribute("user_details",admin);
         return "admin/dashboard";

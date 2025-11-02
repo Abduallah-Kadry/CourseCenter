@@ -108,6 +108,7 @@ app:
       - /
       - /swagger-ui/**
       - /v3/api-docs/**
+      - /uploads/**
       - /swagger-resources/**
       - /webjars/**
       - /docs

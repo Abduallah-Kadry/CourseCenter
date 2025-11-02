@@ -24,7 +24,7 @@ public class CourseRatingConsumer {
             System.out.println("📩 Received CourseRatedEvent: " + event);
 
             Optional<CourseReservation> reservationOpt =
-                    reservationRepository.findByStudentIdAndCourseId(
+                    reservationRepository.findByUserIdAndCourseId(
                             event.getStudentId(), event.getCourseId()
                     );
 
