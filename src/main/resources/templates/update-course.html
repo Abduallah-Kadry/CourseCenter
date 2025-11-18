@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Update Course</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/courses.css}">
+</head>
+<body class="bg-light">
+
+<!-- Notification Container -->
+<div id="notification" class="notification">
+    <div class="alert alert-dismissible fade show" role="alert">
+        <span id="notificationMessage"></span>
+        <button type="button" class="btn-close" onclick="hideNotification()"></button>
+    </div>
+</div>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+    <div class="container-fluid">
+        <a class="navbar-brand"
+           th:href="@{${@environment.getProperty('app.paths.frontend-base')} + ${@environment.getProperty('app.paths.course-base')}}">
+            <i class="bi bi-arrow-left"></i> Back to Courses
+        </a>
+        <div class="d-flex">
+            <button id="logoutBtn" class="btn btn-outline-danger btn-sm">
+                <i class="bi bi-box-arrow-right"></i> Logout
+            </button>
+        </div>
+    </div>
+</nav>
+
+<div class="container py-3">
+    <div class="card mx-auto" style="max-width: 700px;">
+        <div class="card-body p-4">
+            <h2 class="card-title mb-4 text-center fw-bold">
+                <i class="bi bi-pencil-square me-2"></i>Update Course
+            </h2>
+
+            <form id="courseForm" th:object="${course}" onsubmit="submitForm(event)">
+                <!-- Course ID (hidden) -->
+                <input type="hidden" id="courseId" th:value="${course.id}">
+
+                <!-- Course Name -->
+                <div class="mb-4">
+                    <label for="name" class="form-label fw-semibold">
+                        <i class="bi bi-book me-1"></i> Course Name
+                    </label>
+                    <input type="text" id="name" name="name" class="form-control form-control-lg"
+                           th:value="${course.name}" placeholder="Enter course name" required>
+                </div>
+
+                <!-- Description -->
+                <div class="mb-4">
+                    <label for="description" class="form-label fw-semibold">
+                        <i class="bi bi-card-text me-1"></i> Description
+                    </label>
+                    <textarea id="description" name="description" class="form-control"
+                              rows="4" placeholder="Describe the course in detail" required
+                              th:text="${course.description}"></textarea>
+                </div>
+
+                <!-- Credit Hours -->
+                <div class="mb-4">
+                    <label for="creditHours" class="form-label fw-semibold">
+                        <i class="bi bi-clock me-1"></i> Credit Hours
+                    </label>
+                    <input type="number" id="creditHours" name="creditHours" class="form-control"
+                           th:value="${course.creditHours}" min="1" max="10" required>
+                    <div class="form-text">Number of credit hours for this course (1-4)</div>
+                </div>
+
+                <!-- Cost -->
+                <div class="mb-4">
+                    <label for="cost" class="form-label fw-semibold">
+                        <i class="bi bi-currency-dollar me-1"></i> Price
+                    </label>
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-text">$</span>
+                        <input type="number" id="cost" name="cost" step="0.01" min="0"
+                               class="form-control" placeholder="e.g. 99.99" required
+                               th:value="${#numbers.formatDecimal(course.cost, 1, 2)}">
+                    </div>
+                </div>
+
+                <!-- Image Upload -->
+                <div class="mb-4">
+                    <label for="imageFile" class="form-label fw-semibold">
+                        <i class="bi bi-image me-1"></i> Course Image
+                    </label>
+                    <div class="border rounded p-3 text-center bg-light">
+                        <img id="imagePreview" th:src="${course.imageUrl}" class="img-fluid course-image-preview mb-3">
+                        <div class="d-flex flex-column align-items-center">
+                            <input type="file" id="imageFile" name="imageFile"
+                                   class="form-control d-none" accept="image/*"
+                                   onchange="previewImage(this)">
+                            <button type="button" class="btn btn-outline-primary mb-2"
+                                    onclick="document.getElementById('imageFile').click()">
+                                <i class="bi bi-upload me-2"></i>Change Image
+                            </button>
+                            <small class="text-muted">JPG, PNG or GIF (Max 5MB)</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Buttons -->
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                    <button type="button" class="btn btn-outline-secondary me-md-2"
+                            onclick="window.location.href=FRONTEND_BASE +COURSE_BASE">
+                        <i class="bi bi-x-circle me-1"></i> Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary px-4" id="submitBtn">
+                        <span class="spinner-border spinner-border-sm d-none" id="submitSpinner" role="status"></span>
+                        <i class="bi bi-save me-1"></i> Update Course
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+  window.APP_CONFIG = {
+    apiBase: "[[${@environment.getProperty('app.paths.api-base')}]]",
+    authBase: "[[${@environment.getProperty('app.paths.auth-base')}]]",
+    frontendBase: "[[${@environment.getProperty('app.paths.frontend-base')}]]",
+    courseBase: "[[${@environment.getProperty('app.paths.course-base')}]]"
+  };
+</script>
+
+<script th:src="@{/js/updateCourse.js}"></script>
+
+</body>
+</html>
