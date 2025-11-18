@@ -92,9 +92,9 @@ public class UserServiceImpl implements UserService {
 
 
     @Transactional
-    public List<CourseResponse> getEnrolledCourses() {
+    public List<UserCoursesRespond> getEnrolledCourses() {
         return courseReservationRepository.findCoursesByUserId(getCurrentUserId()).stream().
-                map(courseMapper::courseToCourseResponse).collect(Collectors.toList());
+                map(courseMapper::courseToUserCoursesRespond).collect(Collectors.toList());
     }
 
 

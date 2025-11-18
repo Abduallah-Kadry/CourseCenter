@@ -60,7 +60,10 @@ public class CourseServiceImpl implements CourseService {
                 throw new RuntimeException(e);
             }
         }
+
         courseRequest.setImageUrl(courseImageUrl);
+
+        System.out.println(courseRequest);
 
         Course course = courseRepository.save(courseMapper.courseCreateRequestToCourse(courseRequest));
         course.setRating(0); // the default of the Integer class is null
@@ -84,12 +87,9 @@ public class CourseServiceImpl implements CourseService {
             }
         }
 
-        System.out.println(course);
-        courseMapper.courseUpdateRequestToCourse(courseRequest, course);
-        System.out.println("-".repeat(50));
-        System.out.println(course);
-        courseRepository.save(course);
+        courseRequest.setImageUrl(courseImageUrl);
 
+        Course course = courseRepository.save(courseMapper.courseUpdateRequestToCourse(courseRequest));
         return courseMapper.courseToCourseResponse(course);
 
     }
