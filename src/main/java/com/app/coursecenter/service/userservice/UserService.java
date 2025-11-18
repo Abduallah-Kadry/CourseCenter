@@ -2,7 +2,6 @@ package com.app.coursecenter.service.userservice;
 
 import com.app.coursecenter.dto.UserDto;
 import com.app.coursecenter.request.PasswordUpdateRequest;
-import com.app.coursecenter.response.CourseResponse;
 import com.app.coursecenter.response.UserCoursesRespond;
 
 import java.nio.file.AccessDeniedException;
@@ -24,5 +23,5 @@ public interface UserService {
 
     void rateCourse(Long courseId, int rate);
 
-    List<CourseResponse> getEnrolledCourses();
+    List<UserCoursesRespond> getEnrolledCourses();
 }

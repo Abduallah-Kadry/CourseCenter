@@ -15,6 +15,7 @@ public interface CourseMapper {
 
     Course courseCreateRequestToCourse(CreateCourseRequest courseRequest);
 
+    Course courseUpdateRequestToCourse(UpdateCourseRequest courseRequest);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void courseUpdateRequestToCourse(UpdateCourseRequest courseRequest, @MappingTarget Course course);
