@@ -2,22 +2,23 @@ package com.app.coursecenter.controller.frontend;
 
 
 import com.app.coursecenter.entity.Course;
-import com.app.coursecenter.request.CreateCourseRequest;
 import com.app.coursecenter.response.CourseResponse;
 import com.app.coursecenter.service.courseservice.CourseService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.app.coursecenter.service.userservice.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
+@RequiredArgsConstructor
 @RequestMapping("${app.paths.frontend-base}${app.paths.course-base}") // page
 public class CoursePageViewController {
-    @Autowired
-    CourseService courseService;
+
+    private final CourseService courseService;
+    private final UserService userService;
+
 
     @GetMapping("")
     public String courses(
@@ -35,7 +36,7 @@ public class CoursePageViewController {
         model.addAttribute("totalElements", coursePage.getTotalElements());
         model.addAttribute("pageSize", size);
 
-        return "courses"; // thymeleaf template name (courses.html)
+        return "courses";
     }
 
     @GetMapping("/add")
@@ -44,11 +45,22 @@ public class CoursePageViewController {
         return "add-course";
     }
 
+    @GetMapping("/update/{id}")
+    public String showCourseUpdateForm(Model model, @PathVariable Long id) {
+        model.addAttribute("course", courseService.getCourseById(id));
+        return "update-course";
+    }
+
     @GetMapping("/{id}")
     public String showCourseDetail(@PathVariable Long id, Model model) {
+        System.out.println("iam here");
+        System.out.println(userService.getEnrolledCourses().stream().anyMatch(s -> s.getId().equals(id)));
+        System.out.println("iam here");
+
+        model.addAttribute("isEnrolled", userService.getEnrolledCourses().stream().anyMatch(s -> s.getId().equals(id)));
+
         model.addAttribute("course", courseService.getCourseById(id));
         return "course-details";
     }
-
 
 }

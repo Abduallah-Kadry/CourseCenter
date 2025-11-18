@@ -16,37 +16,45 @@
             display: flex;
             flex-direction: column;
         }
+
         .login-container {
             max-width: 400px;
             margin: auto;
             padding: 2rem;
         }
+
         .card {
             border: none;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
+
         .card:hover {
             transform: translateY(-5px);
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
         }
+
         .form-control:focus {
             border-color: #0d6efd;
             box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
         }
+
         .btn-primary {
             background-color: #0d6efd;
             border: none;
             padding: 0.5rem 1.5rem;
         }
+
         .btn-primary:hover {
             background-color: #0b5ed7;
         }
+
         .forgot-password {
             color: #6c757d;
             text-decoration: none;
         }
+
         .forgot-password:hover {
             color: #0d6efd;
         }
@@ -55,7 +63,10 @@
 <body class="bg-light">
 <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
     <div class="container-fluid">
-        <a class="navbar-brand fw-bold" href="#">CourseCenter</a>
+        <a class="navbar-brand"
+           th:href="@{${@environment.getProperty('app.paths.frontend-base')} + ${@environment.getProperty('app.paths.course-base')}}">
+            CourseCenter
+        </a>
     </div>
 </nav>
 
@@ -111,9 +122,10 @@
 
                 <div class="text-center mt-3">
 
-                    Don't have an account?<a class="forgot-password" th:href="@{${@environment.getProperty('app.paths.frontend-base')} + '/register'}">
-                       Register
-                    </a>
+                    Don't have an account?<a class="forgot-password"
+                                             th:href="@{${@environment.getProperty('app.paths.frontend-base')} + '/register'}">
+                    Register
+                </a>
                 </div>
                 <div class="text-center mt-3">
                     <a href="#" class="forgot-password">
@@ -169,7 +181,7 @@
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({email, password}),
         credentials: "include"
       });
 

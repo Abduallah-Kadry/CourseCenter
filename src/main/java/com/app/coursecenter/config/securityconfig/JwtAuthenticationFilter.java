@@ -76,7 +76,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             userDetails.getAuthorities()
                     );
 
-
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
@@ -107,7 +106,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private String extractJwtFromRequest(HttpServletRequest request) {
         // Check Authorization header
-        final String authHeader = request.getHeader("Authorization");
+        final String authHeader = request.getHeader("authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             log.debug("JWT found in Authorization header");
             return authHeader.substring(7);

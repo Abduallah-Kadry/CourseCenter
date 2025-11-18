@@ -10,9 +10,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 @Tag(name = "Admin REST API Endpoints", description = "Operations related to a admin")
 @RestController
-@RequestMapping("/api/admin")
+@RequestMapping("${app.paths.api-base}/admin")
 public class AdminController {
 
     private final AdminService adminService;
@@ -24,7 +25,7 @@ public class AdminController {
     @Operation(summary = "Get all user on pages default page size 5", description = "Retrieve a list of all students in the system")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public ResponseEntity<Page<UserDto>> getAllCourses(
+    public ResponseEntity<Page<UserDto>> getAllUsers(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         try {
@@ -35,6 +36,7 @@ public class AdminController {
         }
     }
 
+    // useless
     @Operation(summary = "Promote user to admin", description = "Promote user to admin role")
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{userId}/role")

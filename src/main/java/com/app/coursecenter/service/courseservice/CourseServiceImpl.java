@@ -60,10 +60,7 @@ public class CourseServiceImpl implements CourseService {
                 throw new RuntimeException(e);
             }
         }
-
         courseRequest.setImageUrl(courseImageUrl);
-
-        System.out.println(courseRequest);
 
         Course course = courseRepository.save(courseMapper.courseCreateRequestToCourse(courseRequest));
         course.setRating(0); // the default of the Integer class is null
@@ -71,22 +68,28 @@ public class CourseServiceImpl implements CourseService {
 
     }
 
+
     @Override
     public CourseResponse updateCourse(Long id, UpdateCourseRequest courseRequest) {
 
-         String courseImageUrl = null;
+        Course course = courseRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("There is no Such Course"));
 
-        if (!courseRequest.getImageFile().isEmpty()) {
+        if (courseRequest.getImageFile() != null && !(courseRequest.getImageFile().isEmpty())) {
             try {
-                courseImageUrl = fileStorageService.saveFile(courseRequest.getImageFile(), "course-images");
+                courseRequest.setImageUrl(
+                        fileStorageService.saveFile(courseRequest.getImageFile(), "course-images")
+                );
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
 
-        courseRequest.setImageUrl(courseImageUrl);
+        System.out.println(course);
+        courseMapper.courseUpdateRequestToCourse(courseRequest, course);
+        System.out.println("-".repeat(50));
+        System.out.println(course);
+        courseRepository.save(course);
 
-        Course course = courseRepository.save(courseMapper.courseUpdateRequestToCourse(courseRequest));
         return courseMapper.courseToCourseResponse(course);
 
     }
