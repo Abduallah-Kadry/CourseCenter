@@ -8,10 +8,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+
 @Controller
 @RequestMapping("${app.paths.frontend-base}")
 public class DashBoardController {
-
 
     @GetMapping("/dashboard")
     public String mainControllerDashboard(Authentication authentication) {
@@ -43,9 +43,7 @@ public class DashBoardController {
         if (!hasRole(authentication, "ADMIN")) {
             return "redirect:/login";
         }
-
         User admin = (User) authentication.getPrincipal();
-
         model.addAttribute("user_details",admin);
         return "admin/dashboard";
     }

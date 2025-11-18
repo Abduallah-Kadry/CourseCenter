@@ -71,7 +71,6 @@ course-rating:
 
 logging:
   level:
-    com.app.coursecenter: DEBUG
     org.springframework.kafka: INFO
     org.apache.kafka: WARN
     org.springframework.security: DEBUG
@@ -98,11 +97,14 @@ app:
   paths:
     # Base paths
     api-base: /api
+    user-base: /user
     frontend-base: /page
 
     # Public endpoints (no auth required)
     public-paths:
       - /
+      - /js/**
+      - /css/**
       - /swagger-ui/**
       - /v3/api-docs/**
       - /uploads/**
@@ -152,5 +154,6 @@ app:
       - ""
       - /{id}
 
-    admin-course-paths:
+    admin-front-end-course-paths:
       - /add
+      - /update/**

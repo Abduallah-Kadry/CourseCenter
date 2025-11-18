@@ -95,6 +95,8 @@ services:
     networks:
       - course-center-network
     restart: always
+    profiles:
+      - prod
 
 
 

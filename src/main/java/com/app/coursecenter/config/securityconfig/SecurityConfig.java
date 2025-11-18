@@ -70,30 +70,37 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        http.authorizeHttpRequests(configurer ->
-                configurer
-                        // ! IMPORTANT: Order matters! Most specific rules first, then general rules
+        http.authorizeHttpRequests(configurer -> {
+                    configurer
+                            // ! IMPORTANT: Order matters! Most specific rules first, then general rules
 
-                        // 1. Admin-only paths (most specific first)
-                        .requestMatchers(pathConfig.getAdminCourseFrontendPaths()).hasAnyAuthority("ROLE_ADMIN")
-                        .requestMatchers(pathConfig.getAdminCourseApiPaths()).hasAnyAuthority("ROLE_ADMIN")
-                        .requestMatchers(pathConfig.getAdminApiPath()).hasAnyAuthority("ROLE_ADMIN")
+                            // 1. Admin-only paths (most specific first)
+                            .requestMatchers(pathConfig.getAdminCourseFrontendPaths()).hasAnyAuthority("ROLE_ADMIN");
 
-                        // 2. Role-specific paths
-                        .requestMatchers(pathConfig.getStudentApiPath()).hasAnyAuthority("ROLE_STUDENT")
-                        .requestMatchers(pathConfig.getTeacherApiPath()).hasAnyAuthority("ROLE_TEACHER")
+                    pathConfig.getAdminCourseApiPaths().forEach(path ->
+                            configurer.requestMatchers(path.getMethod(), path.getPath()).hasAnyAuthority(path.getRoles()));
 
-                        // 3. Public paths (more general)
-                        .requestMatchers(pathConfig.getPublicFrontEndPaths()).permitAll()
-                        .requestMatchers(pathConfig.getPublicCourseFrontPaths()).permitAll()
-                        .requestMatchers(pathConfig.getPublicCourseApiPaths()).permitAll()
-                        .requestMatchers(pathConfig.getAllPublicPaths()).permitAll()
+                    pathConfig.getUserControllerApi().forEach(path ->
+                            configurer.requestMatchers(path.getMethod(), path.getPath()).hasAnyAuthority(path.getRoles())
+                    );
+                    // 2. Public paths (more general)
+                    configurer
+                            .requestMatchers(pathConfig.getPublicFrontEndPaths()).permitAll()
+                            .requestMatchers(pathConfig.getPublicCourseFrontPaths()).permitAll()
+                            .requestMatchers(pathConfig.getPublicCourseApiPaths()).permitAll()
+                            .requestMatchers(pathConfig.getAllPublicPaths()).permitAll()
 
-                        // 4. Authenticated paths (general)
-                        .requestMatchers(pathConfig.getAuthFrontEndPaths()).authenticated()
 
-                        // 5. All other requests require authentication
-                        .anyRequest().authenticated());
+                            // 3 Authenticated paths (general)
+                            .requestMatchers(pathConfig.getAuthFrontEndPaths()).authenticated()
+
+                            // 4. All other requests require authentication
+                            .anyRequest().authenticated();
+
+
+                }
+        );
+
 
         http.csrf(AbstractHttpConfigurer::disable);
 

@@ -10,9 +10,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
 
 @RestController
 @RequestMapping("${app.paths.api-base}${app.paths.auth-base}")
@@ -21,8 +21,13 @@ public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
 
-    public AuthenticationController(AuthenticationService authenticationService) {
+    private final long jwtExpirationSeconds;
+
+
+    public AuthenticationController(AuthenticationService authenticationService,
+                                    @Value("${jwt.expiration}") long jwtExpirationSeconds) {
         this.authenticationService = authenticationService;
+        this.jwtExpirationSeconds = jwtExpirationSeconds;
     }
 
     @Operation(summary = "Register a Student", description = "register a new Student")
@@ -43,7 +48,7 @@ public class AuthenticationController {
                 .httpOnly(true)
                 .secure(false) // change to true if using HTTPS
                 .path("/")
-                .maxAge(24 * 60 * 60) // 1 day
+                .maxAge(jwtExpirationSeconds / 1000)
                 .sameSite("Lax")
                 .build();
 

@@ -7,6 +7,7 @@ import com.app.coursecenter.mapper.UserMapper;
 import com.app.coursecenter.repository.CourseReservationRepository;
 import com.app.coursecenter.repository.UserRepository;
 import com.app.coursecenter.request.PasswordUpdateRequest;
+import com.app.coursecenter.response.CourseResponse;
 import com.app.coursecenter.response.UserCoursesRespond;
 import com.app.coursecenter.service.CourseRatingProducer;
 import com.app.coursecenter.service.CourseReservationCommandProducer;
@@ -91,12 +92,11 @@ public class UserServiceImpl implements UserService {
 
 
     @Transactional
-    public List<UserCoursesRespond> getEnrolledCourses() {
+    public List<CourseResponse> getEnrolledCourses() {
         return courseReservationRepository.findCoursesByUserId(getCurrentUserId()).stream().
-                map(courseMapper::courseToUserCoursesRespond).collect(Collectors.toList());
+                map(courseMapper::courseToCourseResponse).collect(Collectors.toList());
     }
 
-    // ---------------- Account Deletion ----------------
 
     @Override
     public void deleteUser() throws AccessDeniedException {
@@ -109,7 +109,6 @@ public class UserServiceImpl implements UserService {
         userRepository.delete(user);
     }
 
-    // ---------------- Password Update ----------------
 
     @Override
     public void updatePassword(PasswordUpdateRequest passwordUpdateRequest) throws AccessDeniedException {

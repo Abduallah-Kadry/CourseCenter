@@ -1,0 +1,78 @@
+/* courses.css - Styles for the courses page */
+/* General styles */
+body {
+    background-color: #f8f9fa;
+}
+
+.card {
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.course-image-preview {
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+    display: none;
+    margin-bottom: 1rem;
+}
+
+/* Notification styles */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1100;
+    min-width: 300px;
+    max-width: 400px;
+    transform: translateX(150%);
+    transition: transform 0.3s ease-in-out;
+}
+
+.notification.show {
+    transform: translateX(0);
+}
+
+.spinner-border {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-right: 0.5rem;
+}
+
+
+/* Existing courses styles */
+.course-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+    height: 100%;
+}
+
+.course-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.course-image {
+    height: 180px;
+    object-fit: cover;
+}
+
+.star {
+    color: #f1c40f;
+}
+
+#loadingSpinner {
+    display: none;
+}
+
+.pagination {
+    justify-content: center;
+    margin-top: 2rem;
+}
+

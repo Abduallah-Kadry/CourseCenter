@@ -35,6 +35,7 @@
 - [ ] Swagger tutorial (but mainly through the project)
 - [ ] Hibernate (learn through the project)
 - [ ] Unit Testing using the JUNIT 5 (Learn through the book and practice)
+- [ ] IDEMPOTENCE
 
 
 
