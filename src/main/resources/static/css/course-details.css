@@ -8,7 +8,86 @@
 
 .rating {
     color: #f1c40f;
-    margin: 10px 0;
+    margin: 10px 0;;
+}
+
+/* Star Rating Component */
+.star-rating {
+    display: inline-block;
+    direction: rtl; /* Reverse the order of stars */
+    unicode-bidi: bidi-override;
+}
+
+.star-rating input[type="radio"] {
+    display: none; /* Hide the radio inputs */
+}
+
+.star-rating label {
+    display: inline-block;
+    font-size: 2rem;
+    padding: 0 0.25rem;
+    cursor: pointer;
+    color: #e4e5e9; /* Default star color */
+    transition: all 0.2s ease-in-out;
+}
+
+.star-rating label:hover,
+.star-rating label:hover ~ label,
+.star-rating input[type="radio"]:checked ~ label {
+    color: #ffc107; /* Gold color for selected stars */
+}
+
+.star-rating label i {
+    transition: all 0.2s ease-in-out;
+}
+
+.star-rating label:hover i,
+.star-rating input[type="radio"]:checked ~ label i {
+    transform: scale(1.2);
+}
+
+/* Modal specific styles */
+#rateCourseModal .modal-dialog {
+    max-width: 400px;
+}
+
+#rateCourseModal .modal-body {
+    padding: 2rem;
+}
+
+#rateCourseModal .star-rating {
+    font-size: 2.5rem;
+    margin: 1rem 0;
+}
+
+#rateCourseModal .btn-close {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+}
+
+/* Rating button next to average rating */
+.btn-rate {
+    margin-left: 1rem;
+    font-size: 0.875rem;
+    padding: 0.25rem 0.75rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+    .star-rating label {
+        font-size: 1.5rem;
+    }
+
+    #rateCourseModal .star-rating {
+        font-size: 2rem;
+    }
+
+    .btn-rate {
+        margin-left: 0.5rem;
+        font-size: 0.75rem;
+        padding: 0.2rem 0.5rem;
+    }
 }
 
 .price {

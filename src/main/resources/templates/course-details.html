@@ -43,10 +43,50 @@
                 <div class="rating me-3" id="ratingStars">
                     <!-- Stars will be inserted here by JavaScript -->
                 </div>
-                <span class="text-muted" id="averageRating">
+                <span class="text-muted me-3" id="averageRating">
                     <!-- Rating value will be inserted here by JavaScript -->
                 </span>
+                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#rateCourseModal" sec:authorize="hasRole('ROLE_STUDENT')">
+                    <i class="fas fa-star"></i> Rate this course
+                </button>
+            </div>
 
+            <!-- Rating Modal -->
+            <div class="modal fade" id="rateCourseModal" tabindex="-1" aria-labelledby="rateCourseModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="rateCourseModalLabel">Rate this course</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body text-center">
+                            <div class="star-rating mb-3">
+                                <input type="radio" id="star5" name="rating" value="5" /><label for="star5" title="5 stars">
+                                    <i class="far fa-star"></i>
+                                </label>
+                                <input type="radio" id="star4" name="rating" value="4" /><label for="star4" title="4 stars">
+                                    <i class="far fa-star"></i>
+                                </label>
+                                <input type="radio" id="star3" name="rating" value="3" /><label for="star3" title="3 stars">
+                                    <i class="far fa-star"></i>
+                                </label>
+                                <input type="radio" id="star2" name="rating" value="2" /><label for="star2" title="2 stars">
+                                    <i class="far fa-star"></i>
+                                </label>
+                                <input type="radio" id="star1" name="rating" value="1" /><label for="star1" title="1 star">
+                                    <i class="far fa-star"></i>
+                                </label>
+                            </div>
+                            <div id="ratingError" class="text-danger mb-3 d-none">
+                                Please select a rating
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-primary" id="submitRating">Submit Rating</button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="course-content">

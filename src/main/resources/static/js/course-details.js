@@ -5,6 +5,88 @@ const FRONTEND_BASE = window.APP_CONFIG.frontendBase;
 const COURSE_BASE = window.APP_CONFIG.courseBase;
 const USER_BASE = window.APP_CONFIG.userBase;
 
+// Rating functionality
+function initializeRating() {
+    const starInputs = document.querySelectorAll('.star-rating input[type="radio"]');
+    const starLabels = document.querySelectorAll('.star-rating label');
+    const submitBtn = document.getElementById('submitRating');
+    const ratingError = document.getElementById('ratingError');
+    const rateModal = new bootstrap.Modal(document.getElementById('rateCourseModal'));
+    let selectedRating = 0;
+
+    // Handle star hover and selection
+    starLabels.forEach((label, index) => {
+        label.addEventListener('mouseover', () => {
+            const value = parseInt(label.getAttribute('for').replace('star', ''));
+            updateStarDisplay(value);
+        });
+
+        label.addEventListener('mouseout', () => {
+            updateStarDisplay(selectedRating);
+        });
+
+        label.addEventListener('click', (e) => {
+            selectedRating = parseInt(e.target.closest('label').getAttribute('for').replace('star', ''));
+            updateStarDisplay(selectedRating);
+            ratingError.classList.add('d-none');
+        });
+    });
+
+    // Update star display
+    function updateStarDisplay(rating) {
+        starLabels.forEach((star, index) => {
+            const starValue = 5 - index;
+            const icon = star.querySelector('i');
+            if (starValue <= rating) {
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+            } else {
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+            }
+        });
+    }
+
+    // Handle rating submission
+    if (submitBtn) {
+        submitBtn.addEventListener('click', async () => {
+            if (selectedRating === 0) {
+                ratingError.classList.remove('d-none');
+                return;
+            }
+
+            try {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Submitting...';
+
+                const response = await fetch(`${API_BASE}${USER_BASE}${COURSE_BASE}/rate?courseId=${courseId}&rate=${selectedRating}`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    rateModal.hide();
+                    showNotification('Thank you for your rating!', 'success');
+                    // Reload the page to show updated rating
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    const error = await response.text();
+                    throw new Error(error || 'Failed to submit rating');
+                }
+            } catch (error) {
+                console.error('Rating error:', error);
+                showNotification(error.message || 'An error occurred while submitting your rating', 'danger');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Rating';
+            }
+        });
+    }
+}
+
 // Get course ID from URL
 const courseId = window.location.pathname.split('/').pop();
 
@@ -14,6 +96,7 @@ const enrollBtn = document.querySelector('.enroll-btn');
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
+    initializeRating();
     loadAverageRating();
 });
 
