@@ -10,7 +10,7 @@
 
 A comprehensive Spring Boot application for managing courses with full CRUD operations, JWT authentication, and Swagger API documentation.
 
-[Features](#-features) • [Installation](#-installation) • [API Docs](#-api-documentation) • [Contributing](#-contributing)
+[Features](#-features) • [Installation](#-installation) • [API Docs](#-api-documentation)
 
 </div>
 
@@ -24,17 +24,9 @@ A comprehensive Spring Boot application for managing courses with full CRUD oper
 - [Prerequisites](#-prerequisites)
 - [Installation](#-installation)
   - [Running with Docker](#-running-with-docker)
-  - [Running Locally](#-running-locally)
-- [Configuration](#-configuration)
 - [API Documentation](#-api-documentation)
 - [Database Schema](#-database-schema)
-- [Authentication & Authorization](#-authentication--authorization)
 - [Data Flow](#-data-flow)
-- [Testing](#-testing)
-- [Deployment](#-deployment)
-- [Troubleshooting](#-troubleshooting)
-- [Contributing](#-contributing)
-- [License](#-license)
 
 ## 🚀 Features
 
@@ -44,7 +36,6 @@ A comprehensive Spring Boot application for managing courses with full CRUD oper
 - 📚 **RESTful API**: Well-structured REST endpoints with standardized API response entities
 - 📖 **Swagger Documentation**: Interactive API documentation for easy testing and exploration
 - 📄 **Pagination Support**: Efficient data retrieval with built-in pagination
-- 🔍 **Data Filtering**: Search and filter capabilities for better data management
 
 ### Technical Features
 - 🏗️ **Clean Architecture**: DTO pattern implementation
@@ -54,7 +45,6 @@ A comprehensive Spring Boot application for managing courses with full CRUD oper
 - 💾 **Database Management**: Auto-update schema using Hibernate DDL mode `update`
 - 🔄 **Data Persistence**: Shared data configuration between environments
 - 🔒 **Security**: Full user management with encrypted passwords
-- 📊 **Logging**: Comprehensive application logging
 - ✔️ **Validation**: Input validation at controller level
 - 🔔 **Event-Driven Architecture**: Apache Kafka integration for asynchronous messaging
 - 📧 **Notification Service**: Real-time notifications via Kafka consumers
@@ -87,50 +77,9 @@ A comprehensive Spring Boot application for managing courses with full CRUD oper
 
 ### DevOps & Tools
 - **Containerization**: Docker & Docker Compose
-- **Build Tool**: Maven 3.8+ / Gradle 8+
+- **Build Tool**: Maven 3.8+
 - **Version Control**: Git
 
-## 🏛️ Architecture
-
-### Data Flow Pattern
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                    CLIENT REQUEST                        │
-└─────────────────────────────────────────────────────────┘
-                           ↓
-┌─────────────────────────────────────────────────────────┐
-│               CONTROLLER LAYER                           │
-│  • Receives Request DTOs                                 │
-│  • JWT Authentication & Validation                       │
-│  • Route Handling                                        │
-└─────────────────────────────────────────────────────────┘
-                           ↓
-┌─────────────────────────────────────────────────────────┐
-│                SERVICE LAYER                             │
-│  • Business Logic                                        │
-│  • Authorization Checks                                  │
-│  • Data Transformation                                   │
-└─────────────────────────────────────────────────────────┘
-                           ↓
-┌─────────────────────────────────────────────────────────┐
-│              REPOSITORY LAYER                            │
-│  • JPA Repository                                        │
-│  • Database Operations                                   │
-│  • Entity Management                                     │
-└─────────────────────────────────────────────────────────┘
-                           ↓
-┌─────────────────────────────────────────────────────────┐
-│                 MySQL DATABASE                           │
-│  • Data Persistence                                      │
-│  • Entity Storage                                        │
-└─────────────────────────────────────────────────────────┘
-                           ↓
-┌─────────────────────────────────────────────────────────┐
-│              RESPONSE GENERATION                         │
-│  Entity → DTO → Response Entity → JSON                   │
-└─────────────────────────────────────────────────────────┘
-```
 
 ### DTO Pattern Implementation
 
@@ -166,9 +115,6 @@ Database Entity → Response DTO → API Response Entity → JSON
 git clone https://github.com/Abduallah-Kadry/CourseCenter.git
 cd CourseCenter
 
-# 2. Create environment file (optional)
-cp .env.example .env
-
 # 3. Build and start containers
 docker-compose up --build -d
 
@@ -190,34 +136,6 @@ docker-compose logs -f app
 | **zookeeper** | coursecenter-zookeeper | 2181 | Kafka coordination service |
 
 
-```bash
-# 1. Clone the repository
-git clone https://github.com/Abduallah-Kadry/CourseCenter.git
-cd CourseCenter
-
-# 2. Create MySQL database
-mysql -u root -p
-CREATE DATABASE coursecenter;
-EXIT;
-
-# 3. Update application.properties with your database credentials
-
-# 4. Build the project
-mvn clean install
-# or
-./gradlew build
-
-# 5. Run the application
-mvn spring-boot:run
-# or
-./gradlew bootRun
-# or
-java -jar target/coursecenter-0.0.1-SNAPSHOT.jar
-
-# 6. Access the application
-# Application: http://localhost:8080
-# Swagger UI: http://localhost:8080/swagger-ui.html
-```
 
 ## 📚 API Documentation
 
@@ -265,7 +183,6 @@ Each entity supports the following 5 standard CRUD operations:
 | 404 | Not Found | Resource not found |
 | 409 | Conflict | Resource already exists |
 | 500 | Internal Server Error | Server error |
-
 
 
 ### Data Sharing Configuration
@@ -357,26 +274,36 @@ Each entity supports the following 5 standard CRUD operations:
 ## 🏗️ Project Structure
 
 ```
-CourseCenter/
-├── src/
-│   └── main/
-│       └── java/
-│           └── com/
-│               └── app/
-│                   └── coursecenter/
-│                       ├── entity/
-│                       │   ├── User.java
-│                       │   ├── Course.java
-│                       │   ├── CourseReservation.java
-│                       │   └── Role.java
-│                       ├── controller/
-│                       ├── service/
-│                       ├── repository/
-│                       ├── dto/
-│                       ├── security/
-│                       ├── config/
-│                       ├── exception/
-│                       └── CourseCenterApplication.java
+└───com
+    └───app
+        └───coursecenter
+            ├───Annotaions
+            ├───audit
+            ├───config
+            │   ├───securityconfig
+            │   │   └───kafka
+            │   └───webconfig
+            ├───controller
+            │   ├───coursecontroller
+            │   ├───frontend
+            │   └───usercontroller
+            ├───dto
+            ├───entity
+            ├───exception
+            │   └───ExceptionsAdvice
+            ├───mapper
+            ├───repository
+            ├───request
+            ├───response
+            ├───service
+            │   ├───adminservice
+            │   ├───authenticationservice
+            │   ├───courseservice
+            │   ├───FileStorageService
+            │   └───userservice
+            ├───util
+            └───Validators
+
 ```
 
 ## 🔔 Kafka Integration
@@ -421,14 +348,6 @@ Kafka Topics → NotificationConsumer → NotificationService → External Chann
 | `course-reservation-topic` | Course enrollment events | 3 | 1 |
 | `notification-topic` | User notifications | 3 | 1 |
 
-### Benefits of Kafka Integration
-
-- ✅ **Asynchronous Processing**: Non-blocking operations for better performance
-- ✅ **Scalability**: Easy horizontal scaling of consumers
-- ✅ **Reliability**: Message persistence and guaranteed delivery
-- ✅ **Decoupling**: Services communicate without direct dependencies
-- ✅ **Event Sourcing**: Complete audit trail of all events
-- ✅ **Real-time Processing**: Immediate event propagation
 
 ### Monitoring Kafka
 
