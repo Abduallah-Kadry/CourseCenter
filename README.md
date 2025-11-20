@@ -6,7 +6,6 @@
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.x-green?style=for-the-badge&logo=spring)
 ![MySQL](https://img.shields.io/badge/MySQL-8.0-blue?style=for-the-badge&logo=mysql)
 ![Docker](https://img.shields.io/badge/Docker-ready-blue?style=for-the-badge&logo=docker)
-![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)
 
 A comprehensive Spring Boot application for managing courses with full CRUD operations, JWT authentication, and Swagger API documentation.
 
