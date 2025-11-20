@@ -115,6 +115,9 @@ Database Entity → Response DTO → API Response Entity → JSON
 git clone https://github.com/Abduallah-Kadry/CourseCenter.git
 cd CourseCenter
 
+#2. Build the package using googleJib
+mvn jib:dockerBuild -Dimage=coursecenter-app
+
 # 3. Build and start containers
 docker-compose up --build -d
 
@@ -134,8 +137,6 @@ docker-compose logs -f app
 | **mysql** | coursecenter-mysql | 3306 | MySQL database server |
 | **kafka** | coursecenter-kafka | 9092 | Apache Kafka message broker |
 | **zookeeper** | coursecenter-zookeeper | 2181 | Kafka coordination service |
-
-
 
 ## 📚 API Documentation
 
@@ -303,7 +304,6 @@ Each entity supports the following 5 standard CRUD operations:
             │   └───userservice
             ├───util
             └───Validators
-
 ```
 
 ## 🔔 Kafka Integration
