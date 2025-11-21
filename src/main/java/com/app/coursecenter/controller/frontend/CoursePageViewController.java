@@ -4,6 +4,7 @@ package com.app.coursecenter.controller.frontend;
 import com.app.coursecenter.entity.Course;
 import com.app.coursecenter.response.CourseResponse;
 import com.app.coursecenter.service.courseservice.CourseService;
+import com.app.coursecenter.service.enrollmentService.ReservationService;
 import com.app.coursecenter.service.userservice.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,7 +19,7 @@ public class CoursePageViewController {
 
     private final CourseService courseService;
     private final UserService userService;
-
+    private final ReservationService reservationService;
 
     @GetMapping("")
     public String courses(
@@ -54,7 +55,13 @@ public class CoursePageViewController {
     @GetMapping("/{id}")
     public String showCourseDetail(@PathVariable Long id, Model model) {
 
-        model.addAttribute("isEnrolled", userService.getEnrolledCourses().stream().anyMatch(s -> s.getId().equals(id)));
+        boolean isEnrolled = false;
+        try {
+            isEnrolled = reservationService.getEnrolledCourses().stream().anyMatch(s -> s.getId().equals(id));
+        } catch (Exception ignored) {
+        }
+
+        model.addAttribute("isEnrolled", isEnrolled);
 
         model.addAttribute("course", courseService.getCourseById(id));
         return "course-details";

@@ -74,10 +74,13 @@ public class ApiPathConfig {
         need a way to automatically register each controller api method and role in the security config
     */
 
-    // Base paths
+    // Base paths => typically for api use not view page uses
+    // view pages will be one time and won't have much versioning
+
     private String apiBase = "/api";
     private String frontendBase = "/page";
     private String userBase = "/user";
+    private String enrollmentBase = "/enrollment";
 
 
     // Public endpoints (no auth required)

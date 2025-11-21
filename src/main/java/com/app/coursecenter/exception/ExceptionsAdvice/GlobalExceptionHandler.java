@@ -7,6 +7,7 @@ import com.app.coursecenter.exception.AuthenticationException;
 import com.app.coursecenter.exception.DuplicateResourceException;
 import com.app.coursecenter.exception.ResourceNotFoundException;
 import com.app.coursecenter.response.ApiRespond;
+import jakarta.persistence.OptimisticLockException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,17 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiRespond> handleAuthenticationException(AuthenticationException ex) {
         HttpStatus status = HttpStatus.UNAUTHORIZED;
         return buildResponsibility(ex, status);
+
+    }
+
+
+    // TODO ... build the cruds to support the versioning on add, update (just to learn how to do it ... when is another story)
+
+    @ExceptionHandler(OptimisticLockException.class)
+    public ResponseEntity<?> handleOptimisticLockException(OptimisticLockException ex) {
+
+        HttpStatus status = HttpStatus.CONFLICT;
+        return buildResponsibility(ex, "Record was updated by another user. Please refresh the page.", status);
 
     }
 

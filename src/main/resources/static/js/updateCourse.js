@@ -37,7 +37,7 @@ async function submitForm(event) {
 
   try {
     const formData = new FormData(courseForm);
-    
+
     const response = await fetch(`${API_URL}/${courseId}`, {
       method: 'PUT',
       body: formData,
@@ -66,22 +66,24 @@ async function submitForm(event) {
 
 // Logout functionality
 document.getElementById("logoutBtn").addEventListener("click", async () => {
-  if (confirm("Are you sure you want to log out?")) {
-    try {
-      const response = await fetch(`${API_BASE}${AUTH_BASE}/logout`, {
-        method: "POST",
-        credentials: "include"
-      });
+  const isConfirmed = await showConfirmation('Are you sure you want to logout?');
+  if (!isConfirmed) return;
 
-      if (response.ok) {
-        window.location.href = FRONTEND_BASE + "/login";
-      } else {
-        throw new Error("Logout failed");
-      }
-    } catch (error) {
-      showNotification("Logout failed. Please try again.", "danger");
+  try {
+    const response = await fetch(`${API_BASE}${AUTH_BASE}/logout`, {
+      method: "POST",
+      credentials: "include"
+    });
+
+    if (response.ok) {
+      window.location.href = FRONTEND_BASE + "/login";
+    } else {
+      throw new Error("Logout failed");
     }
+  } catch (error) {
+    showNotification("Logout failed. Please try again.", "danger");
   }
+
 });
 
 // Image preview functionality

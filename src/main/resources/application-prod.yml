@@ -8,6 +8,10 @@ spring:
     username: courseuser
     password: coursepass
     driver-class-name: com.mysql.cj.jdbc.Driver
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
 
   jpa:
     hibernate:

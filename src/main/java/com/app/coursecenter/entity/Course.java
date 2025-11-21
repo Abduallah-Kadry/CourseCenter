@@ -3,6 +3,7 @@ package com.app.coursecenter.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -26,4 +27,7 @@ public class Course extends BaseEntity {
 
     @Version
     private int version;
+
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CourseReservation> reservations;
 }

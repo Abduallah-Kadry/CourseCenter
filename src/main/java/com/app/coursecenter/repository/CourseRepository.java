@@ -4,11 +4,18 @@ import com.app.coursecenter.entity.Course;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface CourseRepository extends JpaRepository<Course, Long> {
     Optional<Course> findCourseByName(String name);
+
+
+    @Query(value = "SELECT c.id FROM course c", nativeQuery = true)
+    List<Long> findAllIds();
+
 }

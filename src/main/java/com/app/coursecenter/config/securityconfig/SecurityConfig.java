@@ -73,7 +73,6 @@ public class SecurityConfig {
         http.authorizeHttpRequests(configurer -> {
                     configurer
                             // ! IMPORTANT: Order matters! Most specific rules first, then general rules
-
                             // 1. Admin-only paths (most specific first)
                             .requestMatchers(pathConfig.getAdminCourseFrontendPaths()).hasAnyAuthority("ROLE_ADMIN");
 
@@ -89,7 +88,6 @@ public class SecurityConfig {
                             .requestMatchers(pathConfig.getPublicCourseFrontPaths()).permitAll()
                             .requestMatchers(pathConfig.getPublicCourseApiPaths()).permitAll()
                             .requestMatchers(pathConfig.getAllPublicPaths()).permitAll()
-
 
                             // 3 Authenticated paths (general)
                             .requestMatchers(pathConfig.getAuthFrontEndPaths()).authenticated()

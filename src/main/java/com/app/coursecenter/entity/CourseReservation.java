@@ -29,6 +29,9 @@ public class CourseReservation {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    // typically if the course is deleted then you should notify the student that the course has been deleted and refund them and send them email or somthing
+    // but naaah just delete it
+
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;

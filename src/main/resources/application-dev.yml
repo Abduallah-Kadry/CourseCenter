@@ -9,6 +9,11 @@ spring:
     password: coursepass
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -99,6 +104,7 @@ app:
     api-base: /api
     user-base: /user
     frontend-base: /page
+    enrollment-base: /enrollment
 
     # Public endpoints (no auth required)
     public-paths:

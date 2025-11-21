@@ -37,8 +37,8 @@ public class User extends BaseEntity {
     @CollectionTable(name = "user_authorities", joinColumns = @JoinColumn(name = "user_id"))
     private List<Authority> authorities;
 
-    // --- Utility methods ---
-    public String getFullName() {
-        return firstName + " " + lastName;
-    }
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CourseReservation> reservations;
+
+
 }

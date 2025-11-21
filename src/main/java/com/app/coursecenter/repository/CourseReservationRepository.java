@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,4 +19,6 @@ public interface CourseReservationRepository extends JpaRepository<CourseReserva
 
     @Query("SELECT r.course FROM CourseReservation r WHERE r.user.id = :userId")
     List<Course> findCoursesByUserId(@Param("userId") Long userId);
+
+    Collection<Object> findByUserId(Long studentId);
 }

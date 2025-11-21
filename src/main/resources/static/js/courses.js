@@ -1,5 +1,3 @@
-console.log('courses.js is loaded!');
-
 
 // Environment variables
 const API_BASE = window.APP_CONFIG.apiBase;
@@ -10,11 +8,6 @@ const COURSE_BASE = window.APP_CONFIG.courseBase;
 
 const API_URL = `${API_BASE}${COURSE_BASE}`;
 
-
-console.log(API_BASE)
-console.log(AUTH_BASE)
-console.log(FRONTEND_BASE)
-console.log(COURSE_BASE)
 
 
 // State
@@ -65,22 +58,90 @@ async function loadCourses(page, size) {
   }
 }
 
+// Confirmation modal setup
+const confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+const confirmActionBtn = document.getElementById('confirmAction');
+const confirmationMessage = document.getElementById('confirmationMessage');
+
+function showConfirmation(message, onConfirm) {
+  return new Promise((resolve) => {
+    confirmationMessage.textContent = message;
+
+    const handleConfirm = () => {
+      confirmationModal.hide();
+      confirmActionBtn.removeEventListener('click', handleConfirm);
+      resolve(true);
+    };
+
+    const handleHide = () => {
+      confirmActionBtn.removeEventListener('click', handleConfirm);
+      confirmationModal._element.removeEventListener('hidden.bs.modal', handleHide);
+      resolve(false);
+    };
+
+    confirmActionBtn.addEventListener('click', handleConfirm);
+    confirmationModal._element.addEventListener('hidden.bs.modal', handleHide);
+    confirmationModal.show();
+  });
+}
 
 async function getAverageRating(courseId) {
   try {
-    const response = await fetch(`${API_BASE}${COURSE_BASE}/${courseId}/average-rate`);
+    const response = await fetch(`${API_BASE}${COURSE_BASE}/${courseId}/average-rate`, {
+      credentials: 'include',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    });
+
     if (!response.ok) {
-      console.error('Failed to fetch average rating for course', courseId);
+      console.error('Failed to fetch rating, status:', response.status);
       return 0;
     }
-    return await response.json();
+
+    // The endpoint returns a raw number, not a JSON object
+    const rating = await response.text();
+    const parsedRating = parseFloat(rating);
+    
+    // Ensure we have a valid number
+    return isNaN(parsedRating) ? 0 : parsedRating;
   } catch (error) {
-    console.error('Error fetching average rating:', error);
+    console.error('Error loading average rating:', error);
     return 0;
   }
 }
 
-// Render courses grid
+// Helper function to generate star rating HTML
+function generateStarRating(averageRating) {
+  if (averageRating === undefined || averageRating === null) {
+    return '<span class="text-muted">No ratings yet</span>';
+  }
+
+  const roundedRating = Math.round(averageRating * 2) / 2;
+  const fullStars = Math.floor(roundedRating);
+  const hasHalfStar = roundedRating % 1 !== 0;
+  let starsHtml = '';
+
+  // Full stars
+  for (let i = 0; i < fullStars; i++) {
+    starsHtml += '<i class="fas fa-star text-warning"></i>';
+  }
+
+  // Half star if needed
+  if (hasHalfStar) {
+    starsHtml += '<i class="fas fa-star-half-alt text-warning"></i>';
+  }
+
+  // Empty stars
+  const emptyStars = 5 - Math.ceil(roundedRating);
+  for (let i = 0; i < emptyStars; i++) {
+    starsHtml += '<i class="far fa-star text-warning"></i>';
+  }
+
+  return `${starsHtml} <small class="ms-1">(${averageRating.toFixed(1)})</small>`;
+}
+
 
 async function renderCourses(courses) {
   if (!courses || courses.length === 0) {
@@ -92,6 +153,7 @@ async function renderCourses(courses) {
             </div>`;
     return;
   }
+
 
   // Show loading state
   coursesGrid.innerHTML = '<div class="col-12 text-center py-5">Loading courses...</div>';
@@ -108,23 +170,26 @@ async function renderCourses(courses) {
     coursesGrid.innerHTML = coursesWithRatings.map(course => `
              <div class="col-md-4 col-lg-3 mb-4">
                 <div class="card course-card h-100">
-                    <img src="${course.imageUrl}"
-                         class="card-img-top course-image"
-                         alt="${course.name}"
-                       >
+                    <div class="course-img-container" style="position: relative;">
+                        <img src="${course.imageUrl || 'https://via.placeholder.com/300x200?text=No+Image'}"
+                             class="card-img-top course-image"
+                             alt="${course.name}"
+                             style="height: 150px; width: 100%; object-fit: cover;"
+                             onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
+                        ${course.enrolled ? '<span class="course-badge" style="position: absolute; top: 10px; right: 10px; background: #28a745; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 500;">Enrolled</span>' : ''}
+                    </div>
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title">${course.name || 'Untitled Course'}</h5>
                         <div class="mb-2">
-                            ${Array(5).fill().map((_, i) =>
-      `<span class="${i < Math.round(course.averageRating || 0) ? 'fas fa-star star' : 'far fa-star'}"></span>`
-    ).join('')}
-                            <small class="text-muted ms-2">(${course.averageRating ? course.averageRating.toFixed(1) : 'N/A'})</small>
+                            ${generateStarRating(course.averageRating)}
                         </div>
-
                         <div class="mt-auto">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-muted">${course.cost ? `$${parseFloat(course.cost).toFixed(2)}` : 'Free'}</span>
+                            </div>
                             <a href="${FRONTEND_BASE}${COURSE_BASE}/${course.id}"
-                               class="btn btn-outline-primary w-100">
-                                View Details
+                               class="btn ${course.enrolled ? 'btn-success' : 'btn-outline-primary'} w-100">
+                                ${course.enrolled ? 'Continue Learning' : 'View Details'}
                             </a>
                         </div>
                     </div>
@@ -192,28 +257,33 @@ function showLoading(show) {
 
 // Show notification
 function showNotification(message, type = 'success') {
-  console.log(`[${type}] ${message}`);
   // Simple alert for now, can be replaced with a toast notification
   alert(`${type.toUpperCase()}: ${message}`);
 }
 
-// Handle logout
-async function handleLogout(e) {
-  e.preventDefault();
-  if (confirm("Are you sure you want to log out?")) {
-    try {
-      const response = await fetch(`${API_BASE}${AUTH_BASE}/logout`, {
-        method: "POST",
-        credentials: "include"
-      });
 
-      if (response.ok) {
-        window.location.href = FRONTEND_BASE + "/login";
-      } else {
-        throw new Error("Logout failed");
-      }
-    } catch (error) {
-      showNotification("Logout failed. Please try again.", "danger");
+// Handle logout
+async function handleLogout(event) {
+  event.preventDefault();
+
+
+  const isConfirmed = await showConfirmation('Are you sure you want to logout?');
+  if (!isConfirmed) return;
+
+  try {
+    const response = await fetch(`${API_BASE}${AUTH_BASE}/logout`, {
+      method: 'POST',
+      credentials: 'include'
+    });
+
+    if (response.ok) {
+      window.location.href = FRONTEND_BASE + '/login';
+    } else {
+      throw new Error('Logout failed');
     }
+  } catch (error) {
+    console.error('Logout error:', error);
+    showNotification('Failed to log out. Please try again.', 'danger');
   }
+
 }

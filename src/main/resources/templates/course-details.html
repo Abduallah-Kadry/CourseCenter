@@ -29,6 +29,8 @@
     </div>
 </nav>
 
+<!-- TODO add the unenroll button ... it should be okay now-->
+
 <div class="container my-5" th:if="${course != null}">
     <div class="row">
         <div class="col-lg-8">
@@ -46,14 +48,14 @@
                 <span class="text-muted me-3" id="averageRating">
                     <!-- Rating value will be inserted here by JavaScript -->
                 </span>
-                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#rateCourseModal" sec:authorize="hasRole('ROLE_STUDENT')">
+                <button th:if="${isEnrolled}" type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#rateCourseModal" sec:authorize="hasRole('ROLE_STUDENT')">
                     <i class="fas fa-star"></i> Rate this course
                 </button>
             </div>
 
             <!-- Rating Modal -->
-            <div class="modal fade" id="rateCourseModal" tabindex="-1" aria-labelledby="rateCourseModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
+            <div class="modal fade" id="rateCourseModal" tabindex="-1" aria-labelledby="rateCourseModalLabel" aria-hidden="true" >
+                <div class="modal-dialog"  th:if="${isEnrolled}">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="rateCourseModalLabel">Rate this course</h5>
@@ -112,11 +114,11 @@
                         $<span th:text="${#numbers.formatDecimal(course.cost, 0, 2)}"></span>
                     </div>
 
-                    <div class="d-grid gap-2" sec:authorize="!hasRole('ROLE_ADMIN')">
+                    <div class="d-grid gap-2" sec:authorize="!hasRole('ROLE_ADMIN') ">
                         <button class="btn btn-success btn-lg" disabled th:if="${isEnrolled}">
                             <i class="fas fa-check me-2"></i>Enrolled
                         </button>
-                        <button class="btn btn-primary btn-lg enroll-btn" th:if="${isEnrolled == false}">
+                        <button class="btn btn-primary btn-lg enroll-btn" sec:authorize="isAuthenticated()" th:if="${isEnrolled == false}">
                             Enroll Now
                         </button>
                     </div>
@@ -125,6 +127,14 @@
                         <a class="btn btn-primary btn-lg enroll-btn"
                            th:href="${@environment.getProperty('app.paths.frontend-base')} + ${@environment.getProperty('app.paths.course-base')} + '/update/' + ${course.id}">
                             <i class="bi bi-pencil-square me-2"></i>Update Course
+                        </a>
+                    </div>
+                    <br>
+
+                      <div class="d-grid gap-2" sec:authorize="hasRole('ROLE_ADMIN')">
+                        <a class="btn btn-danger btn-lg deleteCourse-btn">
+
+                            <i class="bi bi-pencil-square me-2"></i>Delete Course
                         </a>
                     </div>
 
@@ -169,14 +179,37 @@
     authBase: "[[${@environment.getProperty('app.paths.auth-base')}]]",
     frontendBase: "[[${@environment.getProperty('app.paths.frontend-base')}]]",
     courseBase: "[[${@environment.getProperty('app.paths.course-base')}]]",
-    userBase: "[[${@environment.getProperty('app.paths.user-base')}]]"
+    userBase: "[[${@environment.getProperty('app.paths.user-base')}]]",
+    enrollmentBase: "[[${@environment.getProperty('app.paths.enrollment-base')}]]"
   };
 </script>
+
+
+<!-- Notification box -->
 
 <div id="notification" class="notification-container">
     <div id="alertBox" class="alert" role="alert">
         <span id="notificationMessage"></span>
         <button type="button" class="btn-close" onclick="hideNotification()" aria-label="Close"></button>
+    </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title" id="confirmationModalLabel">Confirm Action</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="confirmationMessage">
+                <!-- Message will be inserted here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmAction">Confirm</button>
+            </div>
+        </div>
     </div>
 </div>
 
